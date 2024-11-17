@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
@@ -17,37 +21,26 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import RoadRunner.MecanumDrive;
 
 
-import com.bosons.Hardware.Arm;
+import com.bosons.AutoHardware.Arm;
+import com.bosons.AutoHardware.Intake;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Config
 @Autonomous(name = "Auto", group = "Dev")
 public class AutoDev extends LinearOpMode {
-    Arm arm = null;
-    public class Lift {
+    public ElapsedTime timer = new ElapsedTime();
 
-
-        public class positionIntakeActive implements Action {
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                arm = new Arm(AutoDev.this,0.8);
-                arm.positionArm(Arm.Mode.Intake, Arm.Height.Active,2.0);
-                return (arm.isSmoothing());
-            }
-        }
-        public Action positionIntakeActive() {
-            return new positionIntakeActive();
-        }
+    public SleepAction sleeb(int milliseconds){
+        return new SleepAction(milliseconds/1000);
     }
-
-
 
     @Override
     public void waitForStart() {
@@ -60,7 +53,8 @@ public class AutoDev extends LinearOpMode {
         waitForStart();
         Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        arm = new Arm(this,0.8);
+        Intake intake = new Intake(hardwareMap);
+        Arm arm = new Arm(hardwareMap);
 
 
 
@@ -77,13 +71,15 @@ public class AutoDev extends LinearOpMode {
                 .lineToX(47.5)
                 .waitSeconds(3);
 
+
         Actions.runBlocking(
                 new SequentialAction(
-                        Lift.positionIntakeActive();
-                        )
+                        intake.spinIn(),
+                        arm.bucketHigh(),
+                        intake.spinOut(),
+                        arm.home()
+                )
         );
-
-
 
 
 

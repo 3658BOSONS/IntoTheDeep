@@ -2,6 +2,7 @@ package com.bosons.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Motor { //DCMotor Wrapper Class with added functionality and usb communication spam avoidance and speedometer
 
@@ -11,6 +12,11 @@ public class Motor { //DCMotor Wrapper Class with added functionality and usb co
     public Motor(String name, OpMode op)
     {
         motor = op.hardwareMap.get(DcMotor.class, name);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public Motor(String name, HardwareMap hwm)
+    {
+        motor = hwm.get(DcMotor.class, name);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
