@@ -1,18 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -20,11 +13,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import RoadRunner.MecanumDrive;
 
 
@@ -38,8 +26,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoDev extends LinearOpMode {
     public ElapsedTime timer = new ElapsedTime();
 
-    public SleepAction sleeb(int milliseconds){
-        return new SleepAction(milliseconds/1000);
+    public SleepAction waitMilliseconds(int milliseconds){
+        return new SleepAction(milliseconds/1000.0);
     }
 
     @Override
@@ -77,6 +65,7 @@ public class AutoDev extends LinearOpMode {
                         intake.spinIn(),
                         arm.bucketHigh(),
                         intake.spinOut(),
+                        waitMilliseconds(3000),
                         arm.home(),
                         tab1.build()
                 )
