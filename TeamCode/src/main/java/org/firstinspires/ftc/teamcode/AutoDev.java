@@ -77,7 +77,8 @@ public class AutoDev extends LinearOpMode {
                         intake.spinIn(),
                         arm.bucketHigh(),
                         intake.spinOut(),
-                        arm.home()
+                        arm.home(),
+                        tab1.build()
                 )
         );
 

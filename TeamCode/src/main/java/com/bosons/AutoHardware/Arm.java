@@ -1,5 +1,7 @@
 package com.bosons.AutoHardware;
 
+import android.net.wifi.hotspot2.pps.HomeSp;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -344,7 +346,6 @@ public class Arm {
             rightRotationMotor.setPower(0);
             leftRotationMotor.setPower(0);
             int radius = 0;
-            int theta = 0;
             extensionTarget = (int)((radius-40.8)*44.73039215686274);//subtract the fixed length of the arm
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
             if(extensionTarget<0){extensionTarget=0;}
