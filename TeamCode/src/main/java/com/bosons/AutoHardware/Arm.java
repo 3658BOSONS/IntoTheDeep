@@ -211,7 +211,7 @@ public class Arm {
         private final ElapsedTime smoothingTimer = new ElapsedTime();
 
         public boolean run(@NonNull TelemetryPacket packet){
-
+            acceptableExtensionError = 5;
             extensionTarget = (int)((84.6-40.8)*44.73039215686274);//subtract the fixed length of the arm
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
             if(extensionTarget<0){extensionTarget=0;}
@@ -257,9 +257,10 @@ public class Arm {
 
 
 
-            if(Math.abs(armPos-thetaTicks)<40&&(rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError))) {
+            if(Math.abs(armPos-thetaTicks)<100&&(rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError))) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
+                acceptableExtensionError = 30;
                 return false;
             }
             else {
@@ -295,7 +296,7 @@ public class Arm {
             if((timeSlope>0 && rotTarget>thetaTicks)||(timeSlope<0 && rotTarget<thetaTicks)||(timeSlope==0)){
                 rotTarget = thetaTicks;
             }//prevent any overshooting
-            
+
             if(extensionTarget<0){extensionTarget=0;}
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
             //set target position
@@ -346,6 +347,7 @@ public class Arm {
             rightRotationMotor.setPower(0);
             leftRotationMotor.setPower(0);
             int radius = 0;
+            thetaTicks = 0;
             extensionTarget = (int)((radius-40.8)*44.73039215686274);//subtract the fixed length of the arm
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
             if(extensionTarget<0){extensionTarget=0;}
@@ -358,22 +360,30 @@ public class Arm {
             if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
                 leftExtendoMotor.setPower(0.5);
             }
-            int armPos = (int) ((leftRotationMotor.getCurrentPosition()/ticks_in_degree)+0.5);
+            double armPos = ((leftRotationMotor.getCurrentPosition()/ticks_in_degree)+28);
 
             double power = 0.0;//(pid + ff)*0.01;
 
+
+            if (armPos<80.0){power = 0.1;}
+            else{power=-0.3;}
+            if (armPos <= -10.0){power = 0.0;}
             packet.put("pos ",armPos);
             packet.put("target ",rotTarget);
             packet.put("armAngle ", (leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
             packet.put("armLength ",((leftExtendoMotor.getCurrentPosition()+rightExtendoMotor.getCurrentPosition())/2.0)/(ticks_per_cm)+40.8);
-            if (armPos<80){power = 0.3;}
-            else{power=-0.2;}
-            if (Math.abs(armPos) <= 30){power = 0.0;}
             packet.put("power",power);
+
+            packet.put("RightBurnCheck",rightExtendoMotor.burnCheck(acceptableExtensionError));
+            packet.put("LeftBurnCheck",leftExtendoMotor.burnCheck(acceptableExtensionError));
+            packet.put("Is Arm Done Lowering",Math.abs(armPos-thetaTicks)<30);
+            packet.put("armpos",Math.abs(armPos-thetaTicks));
             if(Math.abs(armPos-thetaTicks)<30) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
-                return false;
+                if (rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError)){
+                    return false;
+                }
             }
             else {
                 rightRotationMotor.setPower(power);

@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
@@ -9,7 +11,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,6 +27,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoDev extends LinearOpMode {
     public ElapsedTime timer = new ElapsedTime();
 
+
     public SleepAction waitMilliseconds(int milliseconds){
         return new SleepAction(milliseconds/1000.0);
     }
@@ -39,38 +41,39 @@ public class AutoDev extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         if (isStopRequested()) return;
         waitForStart();
-        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
+
+        //POSITION DEFINITIONS
+        Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
+        Pose2d BlueNet = new Pose2d(55.0,55.0,Math.toRadians(45));
+
+        //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Intake intake = new Intake(hardwareMap);
         Arm arm = new Arm(hardwareMap);
 
-
-
-
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(0))
-                .waitSeconds(2)
-                .setTangent(Math.toRadians(90))
-                .lineToY(48)
-                .setTangent(Math.toRadians(0))
-                .lineToX(32)
-                .strafeTo(new Vector2d(44.5, 30))
-                .turn(Math.toRadians(180))
-                .lineToX(47.5)
-                .waitSeconds(3);
-
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        intake.spinIn(),
-                        arm.bucketHigh(),
-                        intake.spinOut(),
-                        waitMilliseconds(3000),
-                        arm.home(),
-                        tab1.build()
-                )
+        //ACTION SHORTCUTS
+        SequentialAction putInHighBucket = new SequentialAction(
+                arm.bucketHigh(),
+                intake.spinOut(),
+                waitMilliseconds(2000),
+                intake.Stop(),
+                arm.home()
         );
 
+        //MOVEMENT ACTIONS
+        TrajectoryActionBuilder Fucket1 = drive.actionBuilder(initialPose)
+                .lineToY(48.0)
+                .turnTo(Math.toRadians(45))
+                .splineToLinearHeading(BlueNet,0.0);
+
+
+        //EXECUTE ACTIONS
+        Actions.runBlocking(
+                new SequentialAction(
+                        Fucket1.build(),
+                        putInHighBucket
+                )
+        );
 
 
 
