@@ -1,4 +1,4 @@
-package com.bosons.Hardware;
+package com.bosons.Utils;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -29,6 +29,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  *      driverA.updateAll();
  *      you can replace driverA with anything else.
  *      also do NOT stack button checks it makes the code do some funky stuff
+ *
+ *      if you do not put the update all in your loop toggle and sticky buttons will not work
  */
 
 public class Controller{

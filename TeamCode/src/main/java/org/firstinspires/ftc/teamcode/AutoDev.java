@@ -1,36 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.bosons.AutoHardware.Wrist;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
 
-
+//Boson Imports
 import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
+import com.bosons.Utils.Sleep;
 
 @Config
 @Autonomous(name = "Auto", group = "Dev")
 public class AutoDev extends LinearOpMode {
-    public ElapsedTime timer = new ElapsedTime();
-
-
-    public SleepAction waitMilliseconds(int milliseconds){
-        return new SleepAction(milliseconds/1000.0);
-    }
 
     @Override
     public void waitForStart() {
@@ -41,6 +33,8 @@ public class AutoDev extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         if (isStopRequested()) return;
         waitForStart();
+        //Tool Definitions
+        Sleep rest = new Sleep();
 
         //POSITION DEFINITIONS
         Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
@@ -49,19 +43,37 @@ public class AutoDev extends LinearOpMode {
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Intake intake = new Intake(hardwareMap);
+        Wrist wrist = new Wrist(hardwareMap);
         Arm arm = new Arm(hardwareMap);
 
         //ACTION SHORTCUTS
-        SequentialAction putInHighBucket = new SequentialAction(
-                arm.bucketHigh(),
-                intake.spinOut(),
-                waitMilliseconds(2000),
+
+
+        //set the arm to the default position
+        ParallelAction homeArm = new ParallelAction(
                 intake.Stop(),
+                wrist.standby(),
                 arm.home()
         );
+        //move arm to intake position and grab cube
+        ParallelAction intakeSpecimen = new ParallelAction(
+                arm.intakeActive(),
+                wrist.intake(),
+                intake.spinIn()
+        );
+        //move arm to High bucket and drop specimen
+        SequentialAction dumpInHighBucket = new SequentialAction(
+                new ParallelAction(
+                        arm.bucketHigh(),
+                        wrist.bucket()
+                ),
+                intake.spinOut()
+        );
+
+
 
         //MOVEMENT ACTIONS
-        TrajectoryActionBuilder Fucket1 = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder Bucket1 = drive.actionBuilder(initialPose)
                 .lineToY(48.0)
                 .turnTo(Math.toRadians(45))
                 .splineToLinearHeading(BlueNet,0.0);
@@ -70,8 +82,13 @@ public class AutoDev extends LinearOpMode {
         //EXECUTE ACTIONS
         Actions.runBlocking(
                 new SequentialAction(
-                        Fucket1.build(),
-                        putInHighBucket
+                        intakeSpecimen,
+                        rest.seconds(2),
+                        homeArm,
+                        Bucket1.build(),
+                        dumpInHighBucket,
+                        rest.seconds(2),
+                        homeArm
                 )
         );
 

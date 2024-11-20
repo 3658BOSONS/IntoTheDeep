@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import com.bosons.Hardware.Controller;
+import com.bosons.Utils.Controller;
 import com.bosons.Hardware.DriveTrain;
 import com.bosons.Hardware.Arm;
 
