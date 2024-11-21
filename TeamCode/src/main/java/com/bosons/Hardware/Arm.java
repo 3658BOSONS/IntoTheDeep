@@ -161,6 +161,22 @@ public class Arm {
         smoothingTimer.reset();
     }
 
+    public void setPositionPolarAngVelo(pose P, double degPerSec){
+        //convert r (cm) to ticks
+        extensionTarget = (int)((P.radius-40.8)*ticks_per_cm);//subtract the fixed length of the arm
+        if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
+        if(extensionTarget<0){extensionTarget=0;}
+        //convert theta (degrees) to ticks
+        thetaTicks = (int)((P.theta+28)*ticks_in_degree);//subtract the initial -28 degree position of the arm
+        if(thetaTicks>2700){thetaTicks=2700;}
+        if(thetaTicks<0){thetaTicks=0;}
+
+        //set the change in ticks over the set interval
+        thetaTicksInitial = leftRotationMotor.getCurrentPosition();
+        timeSlope = (degPerSec/1000)*ticks_in_degree;//ticks per millisecond
+        smoothingTimer.reset();
+    }
+
 
     public void updatePositionSmooth(){
         if(rotTarget!=thetaTicks) {
