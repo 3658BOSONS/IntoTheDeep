@@ -208,65 +208,74 @@ public class Arm {
     }
 
     public class bucketHigh implements Action{
-        private final ElapsedTime smoothingTimer = new ElapsedTime();
-
+        ElapsedTime Timer = null;
+        double timeSlope;
+        double radius = 84.6;
+        int theta = 100;
         public boolean run(@NonNull TelemetryPacket packet){
-            extensionTarget = (int)((84.6-40.8)*44.73039215686274);//subtract the fixed length of the arm
-            if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
-            if(extensionTarget<0){extensionTarget=0;}
-            //convert theta (degrees) to ticks
-            thetaTicks = (int)((100
-                    +28)*22.755555555555556);//subtract the initial -28 degree position of the arm
-            if(thetaTicks>2700){thetaTicks=2700;}
-            if(thetaTicks<0){thetaTicks=0;}
+            acceptableExtensionError = 44;
+            packet.put("Current State: ","Home");
+            thetaTicks = (int)((theta+28)*ticks_in_degree);
+            if (Timer == null){
+                Timer = new ElapsedTime();
 
-            //set the change in ticks over the set interval
-            thetaTicksInitial = leftRotationMotor.getCurrentPosition();
-            double timeSlope = (thetaTicks-thetaTicksInitial)/(0.3*1000);//ticks per millisecond
-            smoothingTimer.reset();
-            
+                extensionTarget = (int)((radius-40.8)*ticks_per_cm);//subtract the fixed length of the arm
+                if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
+                if(extensionTarget<0){extensionTarget=0;}
+                //convert theta (degrees) to ticks
+                thetaTicks = (int)((theta+28)*ticks_in_degree);//subtract the initial -28 degree position of the arm
+                if(thetaTicks>2700){thetaTicks=2700;}
+                if(thetaTicks<0){thetaTicks=0;}
+
+                //set the change in ticks over the set interval
+                thetaTicksInitial = leftRotationMotor.getCurrentPosition();
+                timeSlope = (thetaTicks-thetaTicksInitial)/(2.0*1000);//ticks per millisecond
+                Timer.reset();
+            }
+            rotTarget = (int) (thetaTicksInitial + timeSlope * Timer.milliseconds());
             if((timeSlope>0 && rotTarget>thetaTicks)||(timeSlope<0 && rotTarget<thetaTicks)||(timeSlope==0)){
                 rotTarget = thetaTicks;
             }//prevent any overshooting
-            
-            if(extensionTarget<0){extensionTarget=0;}
+
+            extensionTarget = (int)((radius-40.8)*44.73039215686274);//subtract the fixed length of the arm
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
-            //set target position
+            if(extensionTarget<0){extensionTarget=0;}
             rightExtendoMotor.setTargetPosition(extensionTarget);
             leftExtendoMotor.setTargetPosition(extensionTarget);
             //set power if it wont burn the motor
-            if(!rightExtendoMotor.burnCheck(5)){
+            if(!rightExtendoMotor.burnCheck(acceptableExtensionError)){
                 rightExtendoMotor.setPower(0.5);
             }
-            if(!leftExtendoMotor.burnCheck(5)){
+            if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
                 leftExtendoMotor.setPower(0.5);
             }
-            rotTarget = thetaTicks;
 
             controller.setPID(p,i,d);
             int armPos = leftRotationMotor.getCurrentPosition();
             double pid = controller.calculate(armPos,rotTarget);
-            double ff = Math.cos(Math.toRadians(rotTarget/22.755555555555556))*f;
+            double ff = Math.cos(Math.toRadians(rotTarget/ticks_in_degree))*f;
+            double power = (pid + ff);
 
-            double power = (pid + ff)*0.5;
-            packet.put("Current State: ","BucketHigh");
-            packet.put("pos ",armPos);
-            packet.put("target ",rotTarget);
+            packet.put("armPos ",armPos);
+            packet.put("ArmRotPower",power);
+            packet.put("rotTarget ",rotTarget);
             packet.put("armAngle ", (leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
-            packet.put("armLength ",((leftExtendoMotor.getCurrentPosition()+rightExtendoMotor.getCurrentPosition())/2.0)/(ticks_per_cm)+40.8);
+            packet.put("targetDistance<(100)",Math.abs(armPos-thetaTicks)<100);
+            packet.put("ArmPos-thetaTicks",armPos-thetaTicks);
 
-            if(armPos > 80) {power = (pid + ff);}
-
-            if(Math.abs(armPos-thetaTicks)<100&&(rightExtendoMotor.burnCheck(5)&&leftExtendoMotor.burnCheck(5))) {
+            if(Math.abs(armPos-thetaTicks)<100) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
-                return false;
+                packet.put("but is it really",true);
+                packet.put("BurnCheck",(rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError)));
+                if ((rightExtendoMotor.burnCheck(5)&&leftExtendoMotor.burnCheck(5))){
+                    packet.put("but is it really really",true);
+                    return false;
+                }
             }
-            else {
-                rightRotationMotor.setPower(power);
-                leftRotationMotor.setPower(power);
-                return true;
-            }
+            rightRotationMotor.setPower(power);
+            leftRotationMotor.setPower(power);
+            return true;
         }
     }
     public Action bucketHigh(){
@@ -340,12 +349,30 @@ public class Arm {
     }
     public class home implements Action{
         ElapsedTime Timer = null;
+        double timeSlope;
+        int radius = 0;
+        int theta = -28;
         public boolean run(@NonNull TelemetryPacket packet){
+
+
+            thetaTicks = 0;
             if (Timer == null){
                 Timer = new ElapsedTime();
+
+                extensionTarget = (int)((radius-40.8)*ticks_per_cm);//subtract the fixed length of the arm
+                if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
+                if(extensionTarget<0){extensionTarget=0;}
+                //convert theta (degrees) to ticks
+                thetaTicks = (int)((theta+28)*ticks_in_degree);//subtract the initial -28 degree position of the arm
+                if(thetaTicks>2700){thetaTicks=2700;}
+                if(thetaTicks<0){thetaTicks=0;}
+
+                //set the change in ticks over the set interval
+                thetaTicksInitial = leftRotationMotor.getCurrentPosition();
+                timeSlope = (thetaTicks-thetaTicksInitial)/(2.0*1000);//ticks per millisecond
+                Timer.reset();
             }
-            int radius = 0;
-            thetaTicks = 0;
+            rotTarget = (int) (thetaTicksInitial + timeSlope * Timer.milliseconds());
             packet.put("Current State: ","Home");
             extensionTarget = (int)((radius-40.8)*44.73039215686274);//subtract the fixed length of the arm
             if(extensionTarget>maxExtensionTicks){extensionTarget=maxExtensionTicks;}
@@ -359,27 +386,24 @@ public class Arm {
             if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
                 leftExtendoMotor.setPower(0.5);
             }
-            double armPos = ((leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
 
-            double power = 0.0;//(pid + ff)*0.01;
+            controller.setPID(p,i,d);
+            int armPos = leftRotationMotor.getCurrentPosition();
+            double pid = controller.calculate(armPos,rotTarget);
+            double ff = Math.cos(Math.toRadians(rotTarget/ticks_in_degree))*f;
 
+            double power = (pid + ff);//*0.5;
 
             /*if (armPos<75.0){power = 0.01;}
             else{power=-0.3;}
             if (armPos <= -10.0){power = 0.0;}*/
-            int milis = 2000;
-            int ticks = (int)(thetaTicks*Timer.milliseconds()/milis);
             packet.put("armPos ",armPos);
             packet.put("rotTarget ",rotTarget);
             packet.put("armAngle ", (leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
-            packet.put("armLength ",((leftExtendoMotor.getCurrentPosition()+rightExtendoMotor.getCurrentPosition())/2.0)/(ticks_per_cm)+40.8);
             packet.put("ArmRotPower",power);
-
-            packet.put("RightBurnCheck",rightExtendoMotor.burnCheck(acceptableExtensionError));
-            packet.put("LeftBurnCheck",leftExtendoMotor.burnCheck(acceptableExtensionError));
-            packet.put("Is Arm Done Lowering",Math.abs(armPos-thetaTicks)<30);
-            packet.put("armpos-thetatick",Math.abs(armPos-thetaTicks));
-            if(Math.abs(armPos)<-10) {
+            packet.put("BurnCheck",(rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError)));
+            packet.put("ArmPos>(-20)",armPos<-20);
+            if(armPos<30) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
                 if (rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError)){
