@@ -27,6 +27,7 @@ public class Intake {
             }
 
             double Pow = intakeServo.getPower();
+            packet.put("Current State: ","SpinIn");
             packet.put("Intake Speed: ", Pow);
             return !initialized;
         }
@@ -46,6 +47,7 @@ public class Intake {
             }
 
             double Pow = intakeServo.getPower();
+            packet.put("Current State: ","SpinOut");
             packet.put("Intake Speed: ", Pow);
             return !initialized;
         }
@@ -65,6 +67,7 @@ public class Intake {
             }
 
             double Pow = intakeServo.getPower();
+            packet.put("Current State: ","SpinStop");
             packet.put("Intake Speed: ", Pow);
             return !initialized;
         }

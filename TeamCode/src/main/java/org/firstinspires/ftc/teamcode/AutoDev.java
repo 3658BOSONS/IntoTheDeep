@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.bosons.AutoHardware.Wrist;
@@ -24,6 +25,10 @@ import com.bosons.Utils.Sleep;
 @Autonomous(name = "Auto", group = "Dev")
 public class AutoDev extends LinearOpMode {
 
+    public SleepAction sleeb(int milliseconds){
+        return new SleepAction(milliseconds/1000.0);
+    }
+
     @Override
     public void waitForStart() {
         super.waitForStart();
@@ -34,7 +39,6 @@ public class AutoDev extends LinearOpMode {
         if (isStopRequested()) return;
         waitForStart();
         //Tool Definitions
-        Sleep rest = new Sleep();
 
         //POSITION DEFINITIONS
         Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
@@ -50,24 +54,24 @@ public class AutoDev extends LinearOpMode {
 
 
         //set the arm to the default position
-        ParallelAction homeArm = new ParallelAction(
+        SequentialAction homeArm = new SequentialAction(
                 intake.Stop(),
                 wrist.standby(),
                 arm.home()
         );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
-                arm.intakeActive(),
+                arm.home(),
                 wrist.intake(),
                 intake.spinIn()
         );
         //move arm to High bucket and drop specimen
         SequentialAction dumpInHighBucket = new SequentialAction(
-                new ParallelAction(
-                        arm.bucketHigh(),
-                        wrist.bucket()
-                ),
-                intake.spinOut()
+                wrist.straight(),
+                arm.bucketHigh(),
+                wrist.bucket(),
+                intake.spinOut(),
+                sleeb(1000)
         );
 
 
@@ -78,16 +82,20 @@ public class AutoDev extends LinearOpMode {
                 .turnTo(Math.toRadians(45))
                 .splineToLinearHeading(BlueNet,0.0);
 
+        TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
+                .lineToY(58.0);
 
         //EXECUTE ACTIONS
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        rest.seconds(2),
+                        sleeb(2000),
                         homeArm,
+                        wrist.straight(),
                         Bucket1.build(),
+                        arm.bucketHigh(),
+                        inchForward.build(),
                         dumpInHighBucket,
-                        rest.seconds(2),
                         homeArm
                 )
         );

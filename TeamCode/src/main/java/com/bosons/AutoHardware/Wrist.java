@@ -16,9 +16,10 @@ public class Wrist {
     public class intake implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 90.0;
+            double targetPos = 0.3;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
+            packet.put("Current State: ","WristIntake");
             packet.put("Wrist | targetPos: ", targetPos);
             packet.put("Wrist | currentPos: ", currentPos);
             return !(currentPos >= targetPos);
@@ -32,9 +33,10 @@ public class Wrist {
     public class standby implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.0;
+            double targetPos = 0.3;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
+            packet.put("Current State: ","WristStandby");
             packet.put("Wrist | targetPos: ", targetPos);
             packet.put("Wrist | currentPos: ", currentPos);
             return !(currentPos >= targetPos);
@@ -48,13 +50,31 @@ public class Wrist {
     public class bucket implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.0;
+            double targetPos = 0.4;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
+            packet.put("Current State: ","WristBucket");
             packet.put("Wrist | targetPos: ", targetPos);
             packet.put("Wrist | currentPos: ", currentPos);
             return !(currentPos >= targetPos);
         }
+    }
+
+    public class straight implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            double targetPos = 0.5;
+            wristServo.setPosition(targetPos);
+            double currentPos = wristServo.getPosition();
+            packet.put("Current State: ","WristStraight");
+            packet.put("Wrist | targetPos: ", targetPos);
+            packet.put("Wrist | currentPos: ", currentPos);
+            return !(currentPos >= targetPos);
+        }
+    }
+
+    public Action straight(){
+        return new straight();
     }
 
     public Action bucket(){
