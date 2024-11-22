@@ -54,14 +54,14 @@ public class AutoDev extends LinearOpMode {
 
 
         //set the arm to the default position
-        SequentialAction homeArm = new SequentialAction(
+        ParallelAction homeArm = new ParallelAction(
                 intake.Stop(),
                 wrist.standby(),
                 arm.home()
         );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
-                arm.home(),
+                //arm.home(),
                 wrist.intake(),
                 intake.spinIn()
         );
@@ -90,11 +90,11 @@ public class AutoDev extends LinearOpMode {
                 new SequentialAction(
                         intakeSpecimen,
                         sleeb(2000),
-                        homeArm,
+                        //homeArm,
                         wrist.straight(),
-                        Bucket1.build(),
+                        //Bucket1.build(),
                         arm.bucketHigh(),
-                        inchForward.build(),
+                        //inchForward.build(),
                         dumpInHighBucket,
                         homeArm
                 )

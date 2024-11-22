@@ -339,7 +339,11 @@ public class Arm {
         return new specimenHigh();
     }
     public class home implements Action{
+        ElapsedTime Timer = null;
         public boolean run(@NonNull TelemetryPacket packet){
+            if (Timer == null){
+                Timer = new ElapsedTime();
+            }
             int radius = 0;
             thetaTicks = 0;
             packet.put("Current State: ","Home");
@@ -355,14 +359,16 @@ public class Arm {
             if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
                 leftExtendoMotor.setPower(0.5);
             }
-            double armPos = ((leftRotationMotor.getCurrentPosition()/ticks_in_degree)+28);
+            double armPos = ((leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
 
             double power = 0.0;//(pid + ff)*0.01;
 
 
-            if (armPos<80.0){power = 0.1;}
+            /*if (armPos<75.0){power = 0.01;}
             else{power=-0.3;}
-            if (armPos <= -10.0){power = 0.0;}
+            if (armPos <= -10.0){power = 0.0;}*/
+            int milis = 2000;
+            int ticks = (int)(thetaTicks*Timer.milliseconds()/milis);
             packet.put("armPos ",armPos);
             packet.put("rotTarget ",rotTarget);
             packet.put("armAngle ", (leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
