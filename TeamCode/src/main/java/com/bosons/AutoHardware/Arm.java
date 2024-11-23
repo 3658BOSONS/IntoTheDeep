@@ -211,10 +211,10 @@ public class Arm {
         ElapsedTime Timer = null;
         double timeSlope;
         double radius = 84.6;
-        int theta = 100;
+        int theta = 90;
         public boolean run(@NonNull TelemetryPacket packet){
-            acceptableExtensionError = 44;
-            packet.put("Current State: ","Home");
+            acceptableExtensionError = 15;
+            packet.put("Current State: ","Bucket High");
             thetaTicks = (int)((theta+28)*ticks_in_degree);
             if (Timer == null){
                 Timer = new ElapsedTime();
@@ -268,7 +268,7 @@ public class Arm {
                 leftRotationMotor.setPower(0);
                 packet.put("but is it really",true);
                 packet.put("BurnCheck",(rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError)));
-                if ((rightExtendoMotor.burnCheck(5)&&leftExtendoMotor.burnCheck(5))){
+                if ((rightExtendoMotor.burnCheck(acceptableExtensionError)&&leftExtendoMotor.burnCheck(acceptableExtensionError))){
                     packet.put("but is it really really",true);
                     return false;
                 }
@@ -394,9 +394,6 @@ public class Arm {
 
             double power = (pid + ff);//*0.5;
 
-            /*if (armPos<75.0){power = 0.01;}
-            else{power=-0.3;}
-            if (armPos <= -10.0){power = 0.0;}*/
             packet.put("armPos ",armPos);
             packet.put("rotTarget ",rotTarget);
             packet.put("armAngle ", (leftRotationMotor.getCurrentPosition()/ticks_in_degree)-28);
