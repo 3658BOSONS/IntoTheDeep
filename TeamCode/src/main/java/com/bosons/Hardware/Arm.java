@@ -31,10 +31,12 @@ public class Arm {
     public PIDController controller;
     public static double p = 0.0016, i = 0.01, d = 0.00005;
     public static double f = 0.15;
+    //public static double p = 0.004, i = 0.05, d = 0.0001;
+    //public static double f = 0.19;
     public static int rotTarget = 0;
     //---------------------//
     public static int extensionTarget = 0;
-    public int acceptableExtensionError = 30;
+    public int acceptableExtensionError = 5;
     public int maxExtensionTicks = 2185;
     public double Power;
 
@@ -67,8 +69,8 @@ public class Arm {
         opm = op;
         Power = power;
 
-        bucketHigh =  new pose(84.6,90,0.3);
-        bucketLow  =  new pose(65,90,0.3);
+        bucketHigh =  new pose(84.6,90,0.4);
+        bucketLow  =  new pose(50,90,0.4);
         specimenHigh =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
         specimenLow =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
         intakeActive = new pose(65,-6,0.9);
@@ -258,6 +260,10 @@ public class Arm {
     public void positionArm(Mode M, Height H, double T){
         switch (M){
             case Bucket:{
+                p = 0.004;
+                i = 0.05;
+                d = 0.0001;
+                f = 0.19;
                 switch (H){
                     case High:{
                         setPositionPolarSmooth(bucketHigh,T);
@@ -273,6 +279,10 @@ public class Arm {
                 return;
             }
             case Specimen:{
+                p = 0.0016;
+                i = 0.01;
+                d = 0.00005;
+                f = 0.15;
                 switch (H){
                     case High:{
                         setPositionPolarSmooth(specimenHigh,T);
@@ -288,6 +298,10 @@ public class Arm {
                 return;
             }
             case Intake:{
+                 p = 0.004;
+                 i = 0.05;
+                 d = 0.0001;
+                 f = 0.19;
                 switch (H){
                     case Standby:{
                         setPositionPolarSmooth(intakeStandby,T);
@@ -302,6 +316,10 @@ public class Arm {
                 }
             }
             case Home:{
+                p = 0.0016;
+                i = 0.01;
+                d = 0.00005;
+                f = 0.15;
                 setPositionPolarSmooth(home,T);
                 setWristServo(home.wrist);
             }

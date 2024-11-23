@@ -263,7 +263,7 @@ public class Arm {
             packet.put("targetDistance<(100)",Math.abs(armPos-thetaTicks)<100);
             packet.put("ArmPos-thetaTicks",armPos-thetaTicks);
 
-            if(Math.abs(armPos-thetaTicks)<100) {
+            if(Math.abs(armPos-thetaTicks)<100||Timer.seconds()>5) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
                 packet.put("but is it really",true);

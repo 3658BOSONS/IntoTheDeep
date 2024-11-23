@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.bosons.AutoHardware.Wrist;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -84,17 +85,23 @@ public class AutoDev extends LinearOpMode {
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
                 .lineToY(58.0);
 
+        TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
+                .splineToLinearHeading(new Pose2d(31.5,36.0,Math.toRadians(180.0)),0.0)
+                .lineToX(-36.0)
+                .strafeTo(new Vector2d(-36.0,70.5-8.375));
+
         //EXECUTE ACTIONS
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        sleeb(500),
+                        //sleeb(500),
                         wrist.straight(),
                         Bucket1.build(),
                         arm.bucketHigh(),
                         inchForward.build(),
                         dumpInHighBucket,
-                        homeArm
+                        homeArm,
+                        park.build()
                 )
         );
 

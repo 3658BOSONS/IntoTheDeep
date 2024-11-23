@@ -109,7 +109,11 @@ public class TeleOpDev extends OpMode{
         //Arm Controls
         if(driverA.toggleButtonState(Controller.Button.y)){
             if(!arm.isSmoothing()){
-                arm.positionArm(Arm.Mode.Bucket,Arm.Height.High,1);
+                if (driverA.toggleButtonState(Controller.Button.dPadUp)) {
+                    arm.positionArm(Arm.Mode.Bucket, Arm.Height.High, 1);
+                }else {
+                    arm.positionArm(Arm.Mode.Bucket, Arm.Height.Low, 1);
+                }
             }
             //armTimer.reset();
             arm.updatePositionSmooth();
@@ -121,11 +125,11 @@ public class TeleOpDev extends OpMode{
             if(!arm.isSmoothing()){
                 if(driverA.onButtonHold(Controller.Button.a)){
 
-                    arm.positionArm(Arm.Mode.Intake,Arm.Height.Low,0.5);
+                    arm.positionArm(Arm.Mode.Intake,Arm.Height.Active,0.5);
                     //arm.setWristServo(0.9);
                 }
                 else{
-                    arm.positionArm(Arm.Mode.Intake,Arm.Height.High,1);
+                    arm.positionArm(Arm.Mode.Intake,Arm.Height.Standby,1);
                     //arm.setWristServo(0.5);
                 }
             }
