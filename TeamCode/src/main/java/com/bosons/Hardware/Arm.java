@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -64,6 +66,17 @@ public class Arm {
     public pose home;
     private double timeSlope;
 
+    //
+    private Mode liftState = Mode.Home;
+    private Height liftHeight = Height.High;
+
+    private Height intakeState = Height.Standby;
+    private pose currentPose;
+    private PIDFCoefficients extendedCoefficients = new PIDFCoefficients(0.004,0.05,0.0001,0.19);
+    private PIDFCoefficients retractedCoefficients = new PIDFCoefficients(0.0016,0.01,0.00005,0.15);
+    private PIDFCoefficients activeCoefficients = retractedCoefficients;
+    private double coefficientSwapPoint = 62.7;
+
 
     public Arm(OpMode op, double power){
         opm = op;
@@ -104,6 +117,13 @@ public class Arm {
         intakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
+
+    public void setLiftState(Mode state){
+        liftState = state;
+    }
+    public void setLiftHeight(Height state){
+        liftHeight = state;
+    }
     public enum Height{
         High,
         Low,
@@ -128,6 +148,19 @@ public class Arm {
     }
 
     public void updatePidLoop(int target){
+
+        if(getArmLength()>coefficientSwapPoint){
+            activeCoefficients = extendedCoefficients;
+        }
+        else{
+            activeCoefficients = retractedCoefficients;
+        }
+
+        p = activeCoefficients.p;
+        i = activeCoefficients.i;
+        d = activeCoefficients.d;
+        f = activeCoefficients.f;
+
         controller.setPID(p,i,d);
         int armPos = leftRotationMotor.getCurrentPosition();
         double pid = controller.calculate(armPos,target);
@@ -255,6 +288,57 @@ public class Arm {
     public void Stop(){
         rightExtendoMotor.setPower(0);
         leftExtendoMotor.setPower(0);
+    }
+
+    public void positionArm(){
+        pose targetPose = home;
+        double targetAngularVelocity = 40;
+
+        switch (liftState){
+            case Home:{
+                targetPose = home;
+                targetAngularVelocity = 20;
+                break;
+            }
+            case Bucket:{
+                switch (liftHeight){
+                    case High:{
+                        targetPose = bucketHigh;
+                        break;
+                    }
+                    case Low:{
+                        targetPose = bucketLow;
+                        break;
+                    }
+                }
+                targetAngularVelocity = 60;
+                break;
+            }
+            case Specimen:{
+
+                break;
+            }
+            case Intake:{
+                switch (intakeState){
+                    case Standby:{
+                        targetPose = intakeStandby;
+                        break;
+                    }
+                    case Active:{
+                        targetPose = intakeActive;
+                        break;
+                    }
+                }
+                targetAngularVelocity = 40;
+                break;
+            }
+        }
+        if(targetPose == currentPose){
+            return;
+        }
+        currentPose = targetPose;
+        setPositionPolarAngVelo(targetPose,targetAngularVelocity);
+        setWristServo(home.wrist);
     }
 
     public void positionArm(Mode M, Height H, double T){
