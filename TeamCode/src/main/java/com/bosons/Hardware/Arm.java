@@ -121,8 +121,8 @@ public class Arm {
     public void setLiftState(Mode state){
         liftState = state;
     }
-    public void setLiftHeight(Height state){
-        liftHeight = state;
+    public void setLiftHeight(Height height){
+        liftHeight = height;
     }
     public enum Height{
         High,
@@ -292,12 +292,12 @@ public class Arm {
 
     public void positionArm(){
         pose targetPose = home;
-        double targetAngularVelocity = 40;
+        double targetAngularVelocity = 20;
 
         switch (liftState){
             case Home:{
-                targetPose = home;
-                targetAngularVelocity = 20;
+                //do nothing because target pose is already set to home when intialized
+                //and targetAngularVelocity is already 20
                 break;
             }
             case Bucket:{
@@ -315,7 +315,6 @@ public class Arm {
                 break;
             }
             case Specimen:{
-
                 break;
             }
             case Intake:{
@@ -341,74 +340,79 @@ public class Arm {
         setWristServo(home.wrist);
     }
 
-    public void positionArm(Mode M, Height H, double T){
-        switch (M){
-            case Bucket:{
-                p = 0.004;
-                i = 0.05;
-                d = 0.0001;
-                f = 0.19;
-                switch (H){
-                    case High:{
-                        setPositionPolarSmooth(bucketHigh,T);
-                        setWristServo(bucketHigh.wrist);
-                        return;
-                    }
-                    case Low:{
-                        setPositionPolarSmooth(bucketLow,T);
-                        setWristServo(bucketLow.wrist);
-                        return;
-                    }
-                }
-                return;
-            }
-            case Specimen:{
-                p = 0.0016;
-                i = 0.01;
-                d = 0.00005;
-                f = 0.15;
-                switch (H){
-                    case High:{
-                        setPositionPolarSmooth(specimenHigh,T);
-                        setWristServo(specimenHigh.wrist);
-                        return;
-                    }
-                    case Low:{
-                        setPositionPolarSmooth(specimenLow,T);
-                        setWristServo(specimenLow.wrist);
-                        return;
-                    }
-                }
-                return;
-            }
-            case Intake:{
-                 p = 0.004;
-                 i = 0.05;
-                 d = 0.0001;
-                 f = 0.19;
-                switch (H){
-                    case Standby:{
-                        setPositionPolarSmooth(intakeStandby,T);
-                        setWristServo(intakeStandby.wrist);
-                        return;
-                    }
-                    case Active:{
-                        setPositionPolarSmooth(intakeActive,T);
-                        setWristServo(intakeActive.wrist);
-                        return;
-                    }
-                }
-            }
-            case Home:{
-                p = 0.0016;
-                i = 0.01;
-                d = 0.00005;
-                f = 0.15;
-                setPositionPolarSmooth(home,T);
-                setWristServo(home.wrist);
-            }
-        }
-    }
+//    public void positionArm(Mode mode, Height height, double time){
+//        switch (mode){
+//            case Bucket:{
+//                p = 0.004;
+//                i = 0.05;
+//                d = 0.0001;
+//                f = 0.19;
+//                switch (height){
+//                    //set Arm pose based on the provided height
+//                    //High
+//                    case High:{
+//                        setPositionPolarSmooth(bucketHigh,time);
+//                        setWristServo(bucketHigh.wrist);
+//                        return;
+//                    }
+//                    //Low
+//                    case Low:{
+//                        setPositionPolarSmooth(bucketLow,time);
+//                        setWristServo(bucketLow.wrist);
+//                        return;
+//                    }
+//                }
+//                return;
+//            }
+//            case Specimen:{
+//                p = 0.0016;
+//                i = 0.01;
+//                d = 0.00005;
+//                f = 0.15;
+//                switch (height){
+//                    //set Arm pose based on the provided height
+//                    case High:{
+//                        setPositionPolarSmooth(specimenHigh,time);
+//                        setWristServo(specimenHigh.wrist);
+//                        return;
+//                    }
+//                    case Low:{
+//                        setPositionPolarSmooth(specimenLow,time);
+//                        setWristServo(specimenLow.wrist);
+//                        return;
+//                    }
+//                }
+//                return;
+//            }
+//            case Intake:{
+//                 p = 0.004;
+//                 i = 0.05;
+//                 d = 0.0001;
+//                 f = 0.19;
+//                 //set Arm pose based on the provided height
+//                switch (height){
+//                    case Standby:{
+//                        setPositionPolarSmooth(intakeStandby,time);
+//                        setWristServo(intakeStandby.wrist);
+//                        return;
+//                    }
+//                    case Active:{
+//                        setPositionPolarSmooth(intakeActive,time);
+//                        setWristServo(intakeActive.wrist);
+//                        return;
+//                    }
+//                }
+//            }
+//            case Home:{
+//                p = 0.0016;
+//                i = 0.01;
+//                d = 0.00005;
+//                f = 0.15;
+//                setPositionPolarSmooth(home,time);
+//                setWristServo(home.wrist);
+//            }
+//        }
+//    }
 
     public static class pose {
         public double theta;

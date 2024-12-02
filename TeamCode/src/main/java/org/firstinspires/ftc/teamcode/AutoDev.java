@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.bosons.AutoHardware.Wrist;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
@@ -18,9 +18,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
 
 //Boson Imports
+import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
-import com.bosons.Utils.Sleep;
 
 @Config
 @Autonomous(name = "Auto", group = "Dev")
