@@ -60,6 +60,10 @@ public class Wrist {
         }
     }
 
+    public Action bucket(){
+        return new bucket();
+    }
+
     public class straight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -77,7 +81,22 @@ public class Wrist {
         return new straight();
     }
 
-    public Action bucket(){
-        return new bucket();
+    public class zero implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            double targetPos = 0.0;
+            wristServo.setPosition(targetPos);
+            double currentPos = wristServo.getPosition();
+            packet.put("Current State: ","WristZero");
+            packet.put("Wrist | targetPos: ", targetPos);
+            packet.put("Wrist | currentPos: ", currentPos);
+            return !(currentPos >= targetPos);
+        }
     }
+
+    public Action zero(){
+        return new zero();
+    }
+
+
 }

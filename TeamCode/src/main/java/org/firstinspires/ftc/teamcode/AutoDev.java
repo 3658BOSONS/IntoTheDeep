@@ -70,6 +70,7 @@ public class AutoDev extends LinearOpMode {
                 wrist.straight(),
                 arm.bucketHigh(),
                 wrist.bucket(),
+                //sleeb(1000),
                 intake.spinOut(),
                 sleeb(500)
         );
@@ -79,15 +80,15 @@ public class AutoDev extends LinearOpMode {
         //MOVEMENT ACTIONS
         TrajectoryActionBuilder Bucket1 = drive.actionBuilder(initialPose)
                 .lineToY(48.0)
-                .turnTo(Math.toRadians(45))
-                .splineToLinearHeading(BlueNet,0.0);
+                .splineToLinearHeading(BlueNet,60.0);
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
                 .lineToY(58.0);
 
         TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
-                .splineToLinearHeading(new Pose2d(31.5,36.0,Math.toRadians(180.0)),0.0)
-                .lineToX(-36.0)
+                .setTangent(45.0)
+                .lineToYLinearHeading(36.0,Math.toRadians(180))
+                .strafeTo(new Vector2d(-36.0,48.0))
                 .strafeTo(new Vector2d(-36.0,70.5-8.375));
 
         //EXECUTE ACTIONS
@@ -95,14 +96,16 @@ public class AutoDev extends LinearOpMode {
                 new SequentialAction(
                         intakeSpecimen,
                         //sleeb(500),
-                        wrist.straight(),
+                        wrist.zero(),
                         Bucket1.build(),
                         arm.bucketHigh(),
+                        wrist.bucket(),
                         inchForward.build(),
                         dumpInHighBucket,
                         homeArm,
+                        wrist.zero(),
                         park.build()
-                )
+                        )
         );
 
 

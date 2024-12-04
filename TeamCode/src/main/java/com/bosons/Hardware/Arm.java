@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Config
 public class Arm {
     //opMode for telemetry and hardware map;
@@ -176,8 +178,8 @@ public class Arm {
             rightRotationMotor.setPower(0);
             leftRotationMotor.setPower(0);
         }
-        opm.telemetry.addData("pos ",armPos);
-        opm.telemetry.addData("target ",target);
+        opm.telemetry.addData("armPos",armPos);
+        opm.telemetry.addData("target",target);
     }
 
     public void setPositionPolarSmooth(pose P, double seconds){//Slows down the movement over a set time;
@@ -209,6 +211,10 @@ public class Arm {
         //set the change in ticks over the set interval
         thetaTicksInitial = leftRotationMotor.getCurrentPosition();
         timeSlope = (degPerSec/1000)*ticks_in_degree;//ticks per millisecond
+        if(thetaTicksInitial>thetaTicks){
+            timeSlope*=-1;
+        }
+        opm.telemetry.addData("timeSlope",timeSlope);
         smoothingTimer.reset();
     }
 
@@ -219,7 +225,6 @@ public class Arm {
             rotTarget = (int) (thetaTicksInitial + timeSlope * smoothingTimer.milliseconds());
             if(rotTarget>2700){rotTarget=2700;}
             if(rotTarget<0){rotTarget=0;}
-            opm.telemetry.addData("smoothing: Target = ",rotTarget);
         }
 
         if((timeSlope>0 && rotTarget>thetaTicks)||(timeSlope<0 && rotTarget<thetaTicks)||(timeSlope==0)){
@@ -230,7 +235,7 @@ public class Arm {
     }
 
     public boolean isSmoothing(){
-        opm.telemetry.addData("rotTarget = ",rotTarget);
+        opm.telemetry.addData("rotTarget",rotTarget);
         opm.telemetry.addData("thetaTicks",thetaTicks);
         return rotTarget != thetaTicks;
     }
@@ -276,11 +281,21 @@ public class Arm {
         //set target position
         rightExtendoMotor.setTargetPosition(counts);
         leftExtendoMotor.setTargetPosition(counts);
+        opm.telemetry.addData("extenstion Target",counts);
+        opm.telemetry.addData("RightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
+        opm.telemetry.addData("LeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
+        opm.telemetry.addData("ExtendoMotorPower",rightExtendoMotor.getPower());
+        opm.telemetry.addData("ExtendoMotorPower",leftExtendoMotor.getPower());
+        opm.telemetry.addData("ExtendoMotorTargetPos",rightExtendoMotor.getTargetPosition());
+        opm.telemetry.addData("ExtendoMotorTargetPos",leftExtendoMotor.getTargetPosition());
+        opm.telemetry.addData("PassedInPower",power);
         //set power if it wont burn the motor
         if(!rightExtendoMotor.burnCheck(acceptableExtensionError)){
+            opm.telemetry.addData("InsideRightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
             rightExtendoMotor.setPower(power);
         }
         if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
+            opm.telemetry.addData("InsideLeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
             leftExtendoMotor.setPower(power);
         }
     }
@@ -292,7 +307,7 @@ public class Arm {
 
     public void positionArm(){
         pose targetPose = home;
-        double targetAngularVelocity = 20;
+        double targetAngularVelocity = 40;
 
         switch (liftState){
             case Home:{
@@ -336,6 +351,8 @@ public class Arm {
             return;
         }
         currentPose = targetPose;
+        //smoothingTimer.reset();
+        opm.telemetry.addData("Smoothing Timer Milliseconds",smoothingTimer.milliseconds());
         setPositionPolarAngVelo(targetPose,targetAngularVelocity);
         setWristServo(home.wrist);
     }
