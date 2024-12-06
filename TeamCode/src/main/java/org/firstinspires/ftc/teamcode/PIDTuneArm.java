@@ -14,6 +14,11 @@ public class PIDTuneArm extends OpMode{
     // Declare HardWare.
     public Arm arm = null;
     public static int tuningTarget = 0;
+    public static int ExtendoTargo = 0;
+    public static double P = 0;
+    public static double I = 0;
+    public static double D = 0;
+    public static double F = 0;
 
 
     /*
@@ -47,7 +52,9 @@ public class PIDTuneArm extends OpMode{
      */
     @Override
     public void loop () {
+        arm.setPIDFCoefficients(P,I,D,F);
         arm.updatePidLoop(tuningTarget);
+        arm.extendToTarget(ExtendoTargo,0.5);
     }
 
     /*

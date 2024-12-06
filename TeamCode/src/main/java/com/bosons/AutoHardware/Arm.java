@@ -211,7 +211,7 @@ public class Arm {
         ElapsedTime Timer = null;
         double timeSlope;
         double radius = 84.6;
-        int theta = 90;
+        int theta = 92;
         public boolean run(@NonNull TelemetryPacket packet){
             acceptableExtensionError = 15;
             packet.put("Current State: ","Bucket High");
@@ -249,7 +249,10 @@ public class Arm {
             if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
                 leftExtendoMotor.setPower(0.5);
             }
-
+            p=0.0016;
+            i=0.01;
+            d=0.00005;
+            f=0.15;
             controller.setPID(p,i,d);
             int armPos = leftRotationMotor.getCurrentPosition();
             double pid = controller.calculate(armPos,rotTarget);

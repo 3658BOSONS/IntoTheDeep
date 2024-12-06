@@ -74,11 +74,14 @@ public class Arm {
 
     private Height intakeState = Height.Standby;
     private pose currentPose;
-    private PIDFCoefficients extendedCoefficients = new PIDFCoefficients(0.004,0.05,0.0001,0.19);
     private PIDFCoefficients retractedCoefficients = new PIDFCoefficients(0.0016,0.01,0.00005,0.15);
+    private static PIDFCoefficients extendedCoefficients = new PIDFCoefficients(0.0016,0.01,0.00005,0.15);;//new PIDFCoefficients(0.004,0.05,0.0001,0.19);
     private PIDFCoefficients activeCoefficients = retractedCoefficients;
     private double coefficientSwapPoint = 62.7;
 
+    public void setPIDFCoefficients(double P,double I,double D,double F){
+        activeCoefficients = new PIDFCoefficients(P,I,D,F);
+    }
 
     public Arm(OpMode op, double power){
         opm = op;
@@ -169,7 +172,7 @@ public class Arm {
         double ff = Math.cos(Math.toRadians(target/ticks_in_degree))*f;
 
         double power = (pid + ff);//*0.5;
-
+        opm.telemetry.addData("ArmPower*10K",power*10000);
         if(armPos>100||target>100) {
             rightRotationMotor.setPower(power);
             leftRotationMotor.setPower(power);
