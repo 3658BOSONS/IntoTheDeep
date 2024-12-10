@@ -29,6 +29,7 @@ public class TeleOpDev extends OpMode{
     public Controller driverA = null;
     public DriveTrain driveTrain = null;
     public Arm arm = null;
+    public Arm.Height HLstate = null;
 
 
     /*
@@ -94,17 +95,26 @@ public class TeleOpDev extends OpMode{
         //arm.updatePidLoop();
         //arm.setPositionPolar(radius_arm,theta_arm);
 
+        if (driverA.onButtonPress(Controller.Button.dPadUp)){
+            HLstate = Arm.Height.High;
+        } else if (driverA.onButtonPress(Controller.Button.dPadDown)) {
+            HLstate = Arm.Height.Low;
+        }
 
         //Intake Controls
         if(driverA.onButtonHold(Controller.Button.a)){
             arm.setIntakePower(1);
+            arm.setHeightTarget(Arm.Height.Active);
         }
         else if(driverA.onButtonHold(Controller.Button.b)){
             arm.setIntakePower(-1);
+            arm.setHeightTarget(Arm.Height.Standby);
         }
         else{
             arm.setIntakePower(0);
+            arm.setHeightTarget(Arm.Height.Standby);
         }
+
 
         //Arm Controls
         if(driverA.toggleButtonState(Controller.Button.y)){
@@ -145,13 +155,14 @@ public class TeleOpDev extends OpMode{
             driveTrain.setDrivePowerCoefficient(1);
             driveTrain.setTurnPowerCoefficient(1);
         }
-
+        arm.setHeightTarget(HLstate);
         arm.positionArm();
         arm.updatePositionSmooth();
 
         telemetry.addData("Smoothing? ",arm.isSmoothing());
         //YOU NEED THESE FOR CONTROLLER AND SAFETY CHECKS
         driverA.updateAll();
+
     }
 
     /*

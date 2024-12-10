@@ -82,7 +82,9 @@ public class Arm {
     public void setPIDFCoefficients(double P,double I,double D,double F){
         activeCoefficients = new PIDFCoefficients(P,I,D,F);
     }
-
+    public void setHeightTarget(Height h){
+        liftHeight = h;
+    }
     public Arm(OpMode op, double power){
         opm = op;
         Power = power;

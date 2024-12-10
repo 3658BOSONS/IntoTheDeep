@@ -75,6 +75,18 @@ public class AutoDev extends LinearOpMode {
                 arm.home(),
                 wrist.zero()
         );
+        SequentialAction homeArm4 = new SequentialAction(
+                intake.Stop(),
+                wrist.standby(),
+                arm.home(),
+                wrist.zero()
+        );
+        SequentialAction homeArm5 = new SequentialAction(
+                intake.Stop(),
+                wrist.standby(),
+                arm.home(),
+                wrist.zero()
+        );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
                 wrist.intake(),
@@ -109,6 +121,19 @@ public class AutoDev extends LinearOpMode {
                 intake.spinOut(),
                 sleeb(500),
                 wrist.straight(),
+                sleeb(100)
+        );
+
+        SequentialAction IntakeCube = new SequentialAction(
+                wrist.intake(),
+                intake.spinIn(),
+                arm.intakeActive(),
+                sleeb(100)
+        );
+        SequentialAction IntakeCube2 = new SequentialAction(
+                wrist.intake(),
+                intake.spinIn(),
+                arm.intakeActive(),
                 sleeb(100)
         );
 
@@ -159,22 +184,28 @@ public class AutoDev extends LinearOpMode {
                         homeArm,
                         intakeOne.build(),
                         //Do Intake Stuff
+                        IntakeCube,
+                        //bucket stuff
+                        homeArm2,
                         Bucket2.build(),
                         arm.bucketHigh(),
                         wrist.bucket(),
                         inchForward.build(),
                         dumpInHighBucket2,
-                        homeArm2,
+                        homeArm3,
                         intakeTwo.build(),
                         //Do Intake Stuff
+                        IntakeCube2,
+                        //bucket stuff
+                        homeArm4,
                         Bucket3.build(),
                         arm.bucketHigh(),
                         wrist.bucket(),
                         inchForward.build(),
                         dumpInHighBucket3,
-                        homeArm3,
+                        homeArm5,
                         park.build()
-                        )
+                )
         );
     }
 }

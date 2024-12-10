@@ -16,7 +16,7 @@ public class Wrist {
     public class intake implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.3;
+            double targetPos = 0.5;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
             packet.put("Current State: ","WristIntake");
