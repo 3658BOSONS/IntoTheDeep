@@ -19,9 +19,6 @@ public class MeepMeepTesting {
                 .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(initialPose)
-                //bluenet
-
-                .waitSeconds(1)
                 .setTangent(Math.toRadians(180))
                 .lineToX(-70+8.375)
                 .build());
