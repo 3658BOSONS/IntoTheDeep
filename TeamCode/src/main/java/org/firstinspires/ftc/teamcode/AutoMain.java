@@ -23,8 +23,8 @@ import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
 
 @Config
-@Autonomous(name = "Auto Dev1", group = "Dev")
-public class AutoDev extends LinearOpMode {
+@Autonomous(name = "Auto Main", group = "Dev")
+public class AutoMain extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
         return new SleepAction(milliseconds/1000.0);
@@ -37,7 +37,7 @@ public class AutoDev extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        if (isStopRequested()) return;
         waitForStart();
         //Tool Definitions
 
@@ -45,7 +45,7 @@ public class AutoDev extends LinearOpMode {
         Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
         Pose2d IntakeOne = new Pose2d(49.0,44,Math.toRadians(90));
         Pose2d IntakeTwo = new Pose2d(59.0,44,Math.toRadians(90));
-        Pose2d BlueNet = new Pose2d(55.0,55.0,Math.toRadians(45));
+        Pose2d BlueNet = new Pose2d(50.0,50.0,Math.toRadians(45));
 
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
@@ -65,7 +65,6 @@ public class AutoDev extends LinearOpMode {
         );
         //set the arm to the default position again
         SequentialAction homeArm2 = new SequentialAction(
-                intake.Stop(),
                 wrist.straight(),
                 arm.home(),
                 wrist.zero()
@@ -152,7 +151,7 @@ public class AutoDev extends LinearOpMode {
                 .lineToY(58.0);
 
         TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
-                .lineToYLinearHeading(.0,Math.toRadians(0))
+                .lineToYLinearHeading(38.0,Math.toRadians(0))
                 .setTangent(Math.toRadians(0))
                 .lineToXLinearHeading(-36.0,Math.toRadians(0))
                 .strafeTo(new Vector2d(-36.0,70.5-8.375));
@@ -176,17 +175,14 @@ public class AutoDev extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        //sleeb(500),
                         wrist.zero(),
                         Bucket1.build(),
                         wrist.straight(),
                         arm.bucketHigh(),
                         inchForward.build(),
                         dumpInHighBucket,
-                        new ParallelAction(
-                                homeArm,
-                                intakeOne.build()
-                        ),
+                        homeArm,
+                        intakeOne.build(),
                         //Do Intake Stuff
                         IntakeCube,
                         intakeOneInch.build(),
@@ -197,21 +193,7 @@ public class AutoDev extends LinearOpMode {
                         arm.bucketHigh(),
                         inchForward.build(),
                         dumpInHighBucket2,
-                        new ParallelAction(
-                                homeArm3,
-                                intakeTwo.build()
-                        ),
-                        //Do Intake Stuff
-                        IntakeCube2,
-                        intakeTwoInch.build(),
-                        //bucket stuff
-                        homeArm4,
-                        Bucket3.build(),
-                        wrist.straight(),
-                        arm.bucketHigh(),
-                        inchForward.build(),
-                        dumpInHighBucket3,
-                        homeArm5,
+                        homeArm3,
                         park.build()
                 )
         );

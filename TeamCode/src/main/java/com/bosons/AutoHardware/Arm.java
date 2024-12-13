@@ -242,7 +242,10 @@ public class Arm {
 
                 //set the change in ticks over the set interval
                 thetaTicksInitial = leftRotationMotor.getCurrentPosition();
-                timeSlope = (thetaTicks-thetaTicksInitial)/(2.0*1000);//ticks per millisecond
+                 timeSlope = (50/1000)*ticks_in_degree;//ticks per millisecond
+                if(thetaTicksInitial>thetaTicks){
+                    timeSlope*=-1;
+                }
                 Timer.reset();
             }
             rotTarget = (int) (thetaTicksInitial + timeSlope * Timer.milliseconds());
@@ -279,7 +282,7 @@ public class Arm {
             packet.put("targetDistance<(100)",Math.abs(armPos-thetaTicks)<100);
             packet.put("ArmPos-thetaTicks",armPos-thetaTicks);
 
-            if(Math.abs(armPos-thetaTicks)<100||Timer.seconds()>5) {
+            if(Math.abs(armPos-thetaTicks)<100||Timer.seconds()>1.5) {
                 rightRotationMotor.setPower(0);
                 leftRotationMotor.setPower(0);
                 packet.put("but is it really",true);

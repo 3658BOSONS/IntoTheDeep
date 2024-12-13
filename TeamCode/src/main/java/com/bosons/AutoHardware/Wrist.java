@@ -50,7 +50,7 @@ public class Wrist {
     public class bucket implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.4;
+            double targetPos = 0.3;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
             packet.put("Current State: ","WristBucket");

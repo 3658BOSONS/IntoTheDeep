@@ -22,7 +22,7 @@ public class Intake {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                intakeServo.setPower(0.8);
+                intakeServo.setPower(1);
                 initialized = true;
             }
 
@@ -42,7 +42,7 @@ public class Intake {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                intakeServo.setPower(-0.8);
+                intakeServo.setPower(-1.0);
                 initialized = true;
             }
 
