@@ -71,7 +71,6 @@ public class Arm {
     //
     private Mode liftState = Mode.Home;
     private Height liftHeight = Height.High;
-
     private Height intakeState = Height.Standby;
     private pose currentPose;
     private PIDFCoefficients retractedCoefficients = new PIDFCoefficients(0.0016,0.01,0.00005,0.15);
@@ -85,18 +84,21 @@ public class Arm {
     public void setHeightTarget(Height h){
         liftHeight = h;
     }
+    public void setIntakeState(Height h){
+        intakeState = h;
+    }
     public Arm(OpMode op, double power){
         opm = op;
         Power = power;
 
         bucketHigh =  new pose(84.6,90,0.4);
         bucketLow  =  new pose(50,90,0.4);
-        specimenHigh =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
-        specimenLow =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
-        intakeActive = new pose(65,-6,0.9);
+        //specimenHigh =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
+        //specimenLow =  new pose(84.6,90,0.3);//REPLACE THE NUMBERS WITH THE RIGHT ONES
+        intakeActive = new pose(65,-3.5,0.9);
 
-        intakeStandby = new pose(65,15,0.5);
-        home = new pose(40.8,-28,0);
+        intakeStandby = new pose(65,15,0.9);
+        home = new pose(40.8,-28,0.45);
 
 
 
@@ -286,21 +288,21 @@ public class Arm {
         //set target position
         rightExtendoMotor.setTargetPosition(counts);
         leftExtendoMotor.setTargetPosition(counts);
-        opm.telemetry.addData("extenstion Target",counts);
-        opm.telemetry.addData("RightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
-        opm.telemetry.addData("LeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
-        opm.telemetry.addData("ExtendoMotorPower",rightExtendoMotor.getPower());
-        opm.telemetry.addData("ExtendoMotorPower",leftExtendoMotor.getPower());
-        opm.telemetry.addData("ExtendoMotorTargetPos",rightExtendoMotor.getTargetPosition());
-        opm.telemetry.addData("ExtendoMotorTargetPos",leftExtendoMotor.getTargetPosition());
-        opm.telemetry.addData("PassedInPower",power);
+        //opm.telemetry.addData("extenstion Target",counts);
+        //opm.telemetry.addData("RightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
+        //opm.telemetry.addData("LeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
+        //opm.telemetry.addData("ExtendoMotorPower",rightExtendoMotor.getPower());
+        //opm.telemetry.addData("ExtendoMotorPower",leftExtendoMotor.getPower());
+        //opm.telemetry.addData("ExtendoMotorTargetPos",rightExtendoMotor.getTargetPosition());
+        //opm.telemetry.addData("ExtendoMotorTargetPos",leftExtendoMotor.getTargetPosition());
+        //opm.telemetry.addData("PassedInPower",power);
         //set power if it wont burn the motor
         if(!rightExtendoMotor.burnCheck(acceptableExtensionError)){
-            opm.telemetry.addData("InsideRightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
+            //opm.telemetry.addData("InsideRightBurnCheck",!rightExtendoMotor.burnCheck(acceptableExtensionError));
             rightExtendoMotor.setPower(power);
         }
         if(!leftExtendoMotor.burnCheck(acceptableExtensionError)){
-            opm.telemetry.addData("InsideLeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
+            //opm.telemetry.addData("InsideLeftBurnCheck",!leftExtendoMotor.burnCheck(acceptableExtensionError));
             leftExtendoMotor.setPower(power);
         }
     }
@@ -312,7 +314,7 @@ public class Arm {
 
     public void positionArm(){
         pose targetPose = home;
-        double targetAngularVelocity = 40;
+        double targetAngularVelocity = 50;
 
         switch (liftState){
             case Home:{
@@ -324,14 +326,16 @@ public class Arm {
                 switch (liftHeight){
                     case High:{
                         targetPose = bucketHigh;
+                        targetAngularVelocity = 70;
                         break;
                     }
                     case Low:{
                         targetPose = bucketLow;
+                        targetAngularVelocity = 80;
                         break;
                     }
                 }
-                targetAngularVelocity = 60;
+
                 break;
             }
             case Specimen:{
@@ -348,7 +352,7 @@ public class Arm {
                         break;
                     }
                 }
-                targetAngularVelocity = 40;
+                targetAngularVelocity = 60;
                 break;
             }
         }
@@ -358,8 +362,9 @@ public class Arm {
         currentPose = targetPose;
         //smoothingTimer.reset();
         opm.telemetry.addData("Smoothing Timer Milliseconds",smoothingTimer.milliseconds());
+        opm.telemetry.addData("Target Pose",targetPose);
         setPositionPolarAngVelo(targetPose,targetAngularVelocity);
-        setWristServo(home.wrist);
+        setWristServo(targetPose.wrist);
     }
 
 //    public void positionArm(Mode mode, Height height, double time){

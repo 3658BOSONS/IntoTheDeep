@@ -29,7 +29,7 @@ public class TeleOpDev extends OpMode{
     public Controller driverA = null;
     public DriveTrain driveTrain = null;
     public Arm arm = null;
-    public Arm.Height HLstate = null;
+    public Arm.Height HLstate = Arm.Height.High;
 
 
     /*
@@ -59,6 +59,7 @@ public class TeleOpDev extends OpMode{
         //driverA.updateAll();
         arm.setWristServo(0);
         arm.setPositionPolar(0,-28);
+        HLstate = Arm.Height.High;
     }
 
     /*
@@ -104,17 +105,16 @@ public class TeleOpDev extends OpMode{
         //Intake Controls
         if(driverA.onButtonHold(Controller.Button.a)){
             arm.setIntakePower(1);
-            arm.setHeightTarget(Arm.Height.Active);
+            //arm.setHeightTarget(Arm.Height.Active);
         }
         else if(driverA.onButtonHold(Controller.Button.b)){
             arm.setIntakePower(-1);
-            arm.setHeightTarget(Arm.Height.Standby);
+            //arm.setHeightTarget(Arm.Height.Standby);
         }
         else{
             arm.setIntakePower(0);
-            arm.setHeightTarget(Arm.Height.Standby);
+            //arm.setHeightTarget(Arm.Height.Standby);
         }
-
 
         //Arm Controls
         if(driverA.toggleButtonState(Controller.Button.y)){
@@ -125,33 +125,21 @@ public class TeleOpDev extends OpMode{
             driveTrain.setTurnPowerCoefficient(0.5);
         }
         else if(driverA.toggleButtonState(Controller.Button.x)){
-            if(!arm.isSmoothing()){
-                if(driverA.onButtonHold(Controller.Button.a)){
+            arm.setLiftState(Arm.Mode.Intake);
 
-                    //arm.positionArm(Arm.Mode.Intake,Arm.Height.Active,0.5);
-                    //arm.setWristServo(0.9);
-                }
-                else{
-                    //arm.positionArm(Arm.Mode.Intake,Arm.Height.Standby,1);
-                    //arm.setWristServo(0.5);
-                }
+            if(driverA.onButtonHold(Controller.Button.a)){
+                arm.setIntakeState(Arm.Height.Active);
             }
-            driveTrain.setDrivePowerCoefficient(1);
-            driveTrain.setTurnPowerCoefficient(1);
+            else{
+                arm.setIntakeState(Arm.Height.Standby);
+            }
+            //arm.positionArm();
+            driveTrain.setDrivePowerCoefficient(0.7);
+            driveTrain.setTurnPowerCoefficient(0.7);
         }
         else{
-            //arm.setPositionPolar(0,90-(armTimer.milliseconds()/2000)*100);//smooth transition over two seconds
-            //if(!arm.isSmoothing()){
-            //arm.positionArm(Arm.Mode.Home,Arm.Height.Standby,1.5);
-            //}
             arm.setLiftState(Arm.Mode.Home);
 
-            if(arm.getArmAngle()<-28){
-                //arm.resetArmAngle();
-            }
-            if(arm.getArmLength()<40.8){
-                //arm.resetArmLength();
-            }
             driveTrain.setDrivePowerCoefficient(1);
             driveTrain.setTurnPowerCoefficient(1);
         }
@@ -159,7 +147,7 @@ public class TeleOpDev extends OpMode{
         arm.positionArm();
         arm.updatePositionSmooth();
 
-        telemetry.addData("Smoothing? ",arm.isSmoothing());
+        //telemetry.addData("Smoothing? ",arm.isSmoothing());
         //YOU NEED THESE FOR CONTROLLER AND SAFETY CHECKS
         driverA.updateAll();
 
