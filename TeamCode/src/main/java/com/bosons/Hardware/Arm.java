@@ -65,7 +65,8 @@ public class Arm {
     pose specimenLow;
     pose intakeActive;
     pose intakeStandby;
-    public pose home;
+    pose home;
+    pose homeIntake;
     private double timeSlope;
 
     //
@@ -98,7 +99,8 @@ public class Arm {
         intakeActive = new pose(65,-3.5,0.9);
 
         intakeStandby = new pose(65,15,0.9);
-        home = new pose(40.8,-28,0.45);
+        home = new pose(40.8,-28,0);
+        homeIntake = new pose(40.8,-28,0.45);
 
 
 
@@ -320,6 +322,16 @@ public class Arm {
             case Home:{
                 //do nothing because target pose is already set to home when intialized
                 //and targetAngularVelocity is already 20
+                switch (intakeState){
+                    case Standby:{
+                        targetPose = home;
+                        break;
+                    }
+                    case Active:{
+                        targetPose = homeIntake;
+                        break;
+                    }
+                }
                 break;
             }
             case Bucket:{

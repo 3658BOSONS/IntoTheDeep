@@ -105,15 +105,15 @@ public class TeleOpDev extends OpMode{
         //Intake Controls
         if(driverA.onButtonHold(Controller.Button.a)){
             arm.setIntakePower(1);
-            //arm.setHeightTarget(Arm.Height.Active);
+            arm.setIntakeState(Arm.Height.Active);
         }
         else if(driverA.onButtonHold(Controller.Button.b)){
             arm.setIntakePower(-1);
-            //arm.setHeightTarget(Arm.Height.Standby);
+            arm.setIntakeState(Arm.Height.Standby);
         }
         else{
             arm.setIntakePower(0);
-            //arm.setHeightTarget(Arm.Height.Standby);
+            arm.setIntakeState(Arm.Height.Standby);
         }
 
         //Arm Controls
@@ -127,13 +127,6 @@ public class TeleOpDev extends OpMode{
         else if(driverA.toggleButtonState(Controller.Button.x)){
             arm.setLiftState(Arm.Mode.Intake);
 
-            if(driverA.onButtonHold(Controller.Button.a)){
-                arm.setIntakeState(Arm.Height.Active);
-            }
-            else{
-                arm.setIntakeState(Arm.Height.Standby);
-            }
-            //arm.positionArm();
             driveTrain.setDrivePowerCoefficient(0.7);
             driveTrain.setTurnPowerCoefficient(0.7);
         }
