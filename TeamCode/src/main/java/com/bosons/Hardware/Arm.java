@@ -320,9 +320,7 @@ public class Arm {
 
         switch (liftState){
             case Home:{
-                //do nothing because target pose is already set to home when intialized
-                //and targetAngularVelocity is already 20
-                switch (intakeState){
+               switch (intakeState){
                     case Standby:{
                         targetPose = home;
                         break;
