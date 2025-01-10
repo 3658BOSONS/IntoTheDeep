@@ -224,7 +224,7 @@ public class Arm {
         ElapsedTime Timer = null;
         double timeSlope;
         double radius = 84.6;
-        int theta = 92;
+        int theta = 94;
         public boolean run(@NonNull TelemetryPacket packet){
             acceptableExtensionError = 15;
             packet.put("Current State: ","Bucket High");

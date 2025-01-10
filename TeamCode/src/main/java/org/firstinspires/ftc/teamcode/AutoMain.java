@@ -16,20 +16,18 @@ import com.acmerobotics.roadrunner.SequentialAction;
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
-
 //Boson Imports
 import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
 
 @Config
-@Autonomous(name = "Auto", group = "Comp")
+@Autonomous(name = "AutoMain", group = "Comp")
 public class AutoMain extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
         return new SleepAction(milliseconds/1000.0);
     }
-
     @Override
     public void waitForStart() {
         super.waitForStart();
@@ -149,6 +147,8 @@ public class AutoMain extends LinearOpMode {
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
                 .lineToY(58.0);
+        TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
+                .lineToY(56.0);
 
         TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
                 .lineToYLinearHeading(38.0,Math.toRadians(0))
@@ -191,7 +191,7 @@ public class AutoMain extends LinearOpMode {
                         Bucket2.build(),
                         wrist.straight(),
                         arm.bucketHigh(),
-                        inchForward.build(),
+                        inchForward2.build(),
                         dumpInHighBucket2,
                         homeArm3,
                         park.build()

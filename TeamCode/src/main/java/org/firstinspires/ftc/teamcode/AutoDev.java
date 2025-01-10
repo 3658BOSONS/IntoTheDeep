@@ -23,7 +23,7 @@ import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
 
 @Config
-@Autonomous(name = "Auto-Dev", group = "Dev")
+@Autonomous(name = "AutoDev", group = "Dev")
 public class AutoDev extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
