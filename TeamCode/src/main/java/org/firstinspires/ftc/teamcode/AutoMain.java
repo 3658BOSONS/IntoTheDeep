@@ -22,7 +22,7 @@ import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
 
 @Config
-@Autonomous(name = "AutoMain", group = "Comp")
+@Autonomous(name = "AutoMain", group = "Comp",preselectTeleOp = "TeleOp")
 public class AutoMain extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
@@ -146,9 +146,9 @@ public class AutoMain extends LinearOpMode {
                 .splineToLinearHeading(BlueNet,60.0);
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
-                .lineToY(58.0);
-        TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
                 .lineToY(56.0);
+        TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
+                .lineToY(54.0);
 
         TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
                 .lineToYLinearHeading(38.0,Math.toRadians(0))

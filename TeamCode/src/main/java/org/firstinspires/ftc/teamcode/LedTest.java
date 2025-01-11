@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @Config
-@TeleOp(name="TeleOp", group="Dev")
+@TeleOp(name="LedTest", group="Dev")
 
 public class LedTest extends OpMode{
     // Declare HardWare.
