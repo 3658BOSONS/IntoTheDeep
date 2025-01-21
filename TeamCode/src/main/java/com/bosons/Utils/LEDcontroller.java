@@ -1,22 +1,7 @@
 package com.bosons.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
-
-class Color {
-    String name;
-    int[] rgb;
-    double pwm;
-
-    public Color(String name, int[] rgb, double pwm) {
-        this.name = name;
-        this.rgb = rgb;
-        this.pwm = pwm;
-    }
-}
 
 public class LEDcontroller {
     public Servo LEDone = null;
@@ -30,5 +15,5 @@ public class LEDcontroller {
     public void SetColor(double pwm) {
         LEDone.setPosition(pwm);
         LEDtwo.setPosition(pwm);
-        }
     }
+}
