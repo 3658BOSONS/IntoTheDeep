@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bosons.Hardware.Extender;
 import com.bosons.Hardware.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,7 +29,7 @@ public class TeleOpWIP extends OpMode {
     // Declare HardWare.
     public Controller driverA = null;
     public Motor arm = null;
-
+    public Extender extendo = null;
 
     /*
      * Code to run ONCE when the Driver hits INIT
@@ -36,10 +37,7 @@ public class TeleOpWIP extends OpMode {
     @Override
     public void init () {
         driverA = new Controller(gamepad1);
-        arm = new Motor("arm",hardwareMap);
-        arm.setTargetPosition(0);
-        arm.setPower(0.0);
-        arm.setConstants(DcMotor.RunMode.RUN_TO_POSITION,DcMotor.ZeroPowerBehavior.BRAKE,DcMotor.Direction.FORWARD);
+        extendo = new Extender(this);
         telemetry.addData("Status", "Initialized");
 
     }
@@ -68,20 +66,15 @@ public class TeleOpWIP extends OpMode {
         arm.setDirection(DcMotor.Direction.FORWARD);
         arm.setPower(1);
         if (driverA.onButtonPress(Controller.Button.dPadUp)){
-            arm.setTargetPosition(8000);
+            extendo.ExtendToTarget(8000);
         }else if (driverA.onButtonPress(Controller.Button.dPadDown)){
-            arm.setTargetPosition(0);
-        }
-        if (arm.getCurrentPosition()>7900){
-            arm.setPower(0.1);
-        } else if (arm.getCurrentPosition()>100) {
-            arm.setPower(1);
-        }else{
-            arm.setPower(0.1);
+            extendo.ExtendToTarget(0);
         }
         double deltaTime = getRuntime() - runtime;
-        telemetry.addData("MotorPower",arm.getPower());
-        telemetry.addData("MotorTicks",arm.getCurrentPosition());
+        telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
+        telemetry.addData("MotorPowerLeft",extendo.getPower()[1]);
+        telemetry.addData("MotorTicksRight",extendo.getCurrentPosition()[0]);
+        telemetry.addData("MotorTicksLeft",extendo.getCurrentPosition()[1]);
         telemetry.addData("deltatime",deltaTime);
         //if (driverA.onButtonPress(Controller.Button.dPadDown)) {
         //    arm.extendToTarget(0,0.5);

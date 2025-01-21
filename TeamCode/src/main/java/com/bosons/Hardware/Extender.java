@@ -13,7 +13,13 @@ public class Extender {
         right = new Motor("RightExt",opMode);
         right.setConstants(DcMotor.RunMode.RUN_TO_POSITION,DcMotor.ZeroPowerBehavior.BRAKE,DcMotor.Direction.FORWARD);
     }
+    public double[] getPower(){
+        return(new double[]{right.getPower(), left.getPower()});
+    }
 
+    public int[] getCurrentPosition(){
+        return(new int[]{right.getCurrentPosition(), left.getCurrentPosition()});
+    }
     public void ExtendToTarget(int pips){
         if (left.getCurrentPosition()>7900){
             left.setPower(0.1);
