@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bosons.Utils.LEDcontroller;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -30,17 +31,18 @@ import com.qualcomm.robotcore.hardware.ServoController;
 public class LedTest extends OpMode{
     // Declare HardWare.
     public Controller driverA = null;
-    public Servo indicator = null;
+    //public Servo indicator = null;
     public double LedColor = 0.277;
     public boolean Reversed = true;
     public static double UpdateSpeed = 0.001;
+    public LEDcontroller indicator = null;
     /*
      * Code to run ONCE when the Driver hits INIT
      */
     @Override
     public void init () {
         driverA = new Controller(gamepad1);
-        indicator = this.hardwareMap.get(Servo.class,"Led");
+        indicator = new LEDcontroller("LedOne","LedTwo",this);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -65,7 +67,6 @@ public class LedTest extends OpMode{
      */
     @Override
     public void loop () {
-
         if (Reversed){
             LedColor -= UpdateSpeed;
         } else {
@@ -78,7 +79,8 @@ public class LedTest extends OpMode{
             Reversed = false;
         }
         telemetry.addData("LedColor",LedColor);
-        indicator.setPosition(LedColor);
+        indicator.SetColor(LedColor);
+
     }
 
     /*

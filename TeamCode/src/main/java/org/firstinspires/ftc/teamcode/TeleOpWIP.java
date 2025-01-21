@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bosons.Hardware.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.bosons.Utils.Controller;
-import com.bosons.Hardware.DriveTrain;
-import com.bosons.Hardware.Arm;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -24,12 +24,10 @@ import com.bosons.Hardware.Arm;
 @Config
 @TeleOp(name="TeleOp", group="Dev")
 
-public class TeleOpDev extends OpMode{
+public class TeleOpWIP extends OpMode {
     // Declare HardWare.
     public Controller driverA = null;
-    public DriveTrain driveTrain = null;
-    public Arm arm = null;
-    public Arm.Height HLstate = Arm.Height.High;
+    public Motor arm = null;
 
 
     /*
@@ -37,11 +35,13 @@ public class TeleOpDev extends OpMode{
      */
     @Override
     public void init () {
-        arm = new Arm(this,0.8);
-        driveTrain = new DriveTrain(this);
         driverA = new Controller(gamepad1);
-
+        arm = new Motor("arm",hardwareMap);
+        arm.setTargetPosition(0);
+        arm.setPower(0.0);
+        arm.setConstants(DcMotor.RunMode.RUN_TO_POSITION,DcMotor.ZeroPowerBehavior.BRAKE,DcMotor.Direction.FORWARD);
         telemetry.addData("Status", "Initialized");
+
     }
 
     /*
@@ -57,9 +57,6 @@ public class TeleOpDev extends OpMode{
     @Override
     public void start () {
         //driverA.updateAll();
-        arm.setWristServo(0);
-        arm.setPositionPolar(0,-28);
-        HLstate = Arm.Height.High;
     }
 
     /*
@@ -67,10 +64,25 @@ public class TeleOpDev extends OpMode{
      */
     @Override
     public void loop () {
-
-        //if (driverA.onButtonPress(Controller.Button.dPadUp)){
-        //    arm.extendToTarget(2190,0.5);
-        //}
+        double runtime = getRuntime();
+        arm.setDirection(DcMotor.Direction.FORWARD);
+        arm.setPower(1);
+        if (driverA.onButtonPress(Controller.Button.dPadUp)){
+            arm.setTargetPosition(8000);
+        }else if (driverA.onButtonPress(Controller.Button.dPadDown)){
+            arm.setTargetPosition(0);
+        }
+        if (arm.getCurrentPosition()>7900){
+            arm.setPower(0.1);
+        } else if (arm.getCurrentPosition()>100) {
+            arm.setPower(1);
+        }else{
+            arm.setPower(0.1);
+        }
+        double deltaTime = getRuntime() - runtime;
+        telemetry.addData("MotorPower",arm.getPower());
+        telemetry.addData("MotorTicks",arm.getCurrentPosition());
+        telemetry.addData("deltatime",deltaTime);
         //if (driverA.onButtonPress(Controller.Button.dPadDown)) {
         //    arm.extendToTarget(0,0.5);
         //}
@@ -84,61 +96,8 @@ public class TeleOpDev extends OpMode{
         //}
 
         //setting up controller input to drivetrain output ratios//
-        double x = -driverA.getAnalogValue(Controller.Joystick.LeftX) * 1.5;
-        double y = driverA.getAnalogValue(Controller.Joystick.LeftY) * 1.5;
-        double turn = -driverA.getAnalogValue(Controller.Joystick.RightX)/1.2;
-
-        double p = Math.sqrt((x * x) + (y * y));
-        double theta = Math.atan2(y, x);
-        driveTrain.drive(p , theta, turn); //updates the drivetrain inputs in the "DriveTrain" class
         //------------------------------------------------------//
 
-        //arm.updatePidLoop();
-        //arm.setPositionPolar(radius_arm,theta_arm);
-
-        if (driverA.onButtonPress(Controller.Button.dPadUp)){
-            HLstate = Arm.Height.High;
-        } else if (driverA.onButtonPress(Controller.Button.dPadDown)) {
-            HLstate = Arm.Height.Low;
-        }
-
-        //Intake Controls
-        if(driverA.onButtonHold(Controller.Button.a)){
-            arm.setIntakePower(1);
-            arm.setIntakeState(Arm.Height.Active);
-        }
-        else if(driverA.onButtonHold(Controller.Button.b)){
-            arm.setIntakePower(-1);
-            arm.setIntakeState(Arm.Height.Standby);
-        }
-        else{
-            arm.setIntakePower(0);
-            arm.setIntakeState(Arm.Height.Standby);
-        }
-
-        //Arm Controls
-        if(driverA.toggleButtonState(Controller.Button.y)){
-
-            arm.setLiftState(Arm.Mode.Bucket);
-
-            driveTrain.setDrivePowerCoefficient(0.5);
-            driveTrain.setTurnPowerCoefficient(0.5);
-        }
-        else if(driverA.toggleButtonState(Controller.Button.x)){
-            arm.setLiftState(Arm.Mode.Intake);
-
-            driveTrain.setDrivePowerCoefficient(0.7);
-            driveTrain.setTurnPowerCoefficient(0.7);
-        }
-        else{
-            arm.setLiftState(Arm.Mode.Home);
-
-            driveTrain.setDrivePowerCoefficient(1);
-            driveTrain.setTurnPowerCoefficient(1);
-        }
-        arm.setHeightTarget(HLstate);
-        arm.positionArm();
-        arm.updatePositionSmooth();
 
         //telemetry.addData("Smoothing? ",arm.isSmoothing());
         //YOU NEED THESE FOR CONTROLLER AND SAFETY CHECKS
