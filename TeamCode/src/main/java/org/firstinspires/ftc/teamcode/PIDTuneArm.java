@@ -26,7 +26,6 @@ public class PIDTuneArm extends OpMode{
      */
     @Override
     public void init () {
-        arm = new Arm(this,0.8);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -44,7 +43,6 @@ public class PIDTuneArm extends OpMode{
     @Override
     public void start () {
         //driverA.updateAll();
-        arm.setWristServo(0);
     }
 
     /*
@@ -52,9 +50,6 @@ public class PIDTuneArm extends OpMode{
      */
     @Override
     public void loop () {
-        arm.setPIDFCoefficients(P,I,D,F);
-        arm.updatePidLoop(tuningTarget);
-        arm.extendToTarget(ExtendoTargo,0.5);
     }
 
     /*

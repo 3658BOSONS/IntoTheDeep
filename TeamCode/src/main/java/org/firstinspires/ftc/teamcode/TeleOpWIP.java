@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bosons.Hardware.Arm;
+import com.bosons.Hardware.DriveTrain;
 import com.bosons.Hardware.Extender;
 import com.bosons.Hardware.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -28,14 +30,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class TeleOpWIP extends OpMode {
     // Declare HardWare.
     public Controller driverA = null;
-    public Motor arm = null;
+    public Arm arm = null;
     public Extender extendo = null;
-
+    public DriveTrain driveTrain = null;
+    public Boolean isHomed = false;
     /*
      * Code to run ONCE when the Driver hits INIT
      */
     @Override
     public void init () {
+        arm = new Arm(this);
+        driveTrain = new DriveTrain(this);
         driverA = new Controller(gamepad1);
         extendo = new Extender(this);
         telemetry.addData("Status", "Initialized");
@@ -63,37 +68,56 @@ public class TeleOpWIP extends OpMode {
     @Override
     public void loop () {
         double runtime = getRuntime();
-        arm.setDirection(DcMotor.Direction.FORWARD);
-        arm.setPower(1);
+
+
+        double x = -driverA.getAnalogValue(Controller.Joystick.LeftX) * 1.5;
+        double y = driverA.getAnalogValue(Controller.Joystick.LeftY) * 1.5;
+        double turn = -driverA.getAnalogValue(Controller.Joystick.RightX)/1.2;
+
+        double p = Math.sqrt((x * x) + (y * y));
+        double theta = Math.atan2(y, x);
+        driveTrain.drive(p , theta, turn);
+
+        if (!isHomed){
+            arm.Home();
+            isHomed = true;
+        }
+
+        if (driverA.onButtonPress(Controller.Button.rightBumper)){
+            arm.Home();
+        }
+
+
+
+        if (driverA.toggleButtonState(Controller.Button.a)){
+            arm.RotateArm(180);
+        }else{
+            arm.RotateArm(0);
+        }
+
+        /*
+        if(driverA.onButtonPress(Controller.Button.rightBumper)){
+            extendo.FORBIDDIN();
+        }
+        */
+
         if (driverA.onButtonPress(Controller.Button.dPadUp)){
             extendo.ExtendToTarget(8000);
         }else if (driverA.onButtonPress(Controller.Button.dPadDown)){
             extendo.ExtendToTarget(0);
         }
         double deltaTime = getRuntime() - runtime;
+
         telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
         telemetry.addData("MotorPowerLeft",extendo.getPower()[1]);
         telemetry.addData("MotorTicksRight",extendo.getCurrentPosition()[0]);
         telemetry.addData("MotorTicksLeft",extendo.getCurrentPosition()[1]);
+        telemetry.addData("ArmTicks",arm.getCurrentPosition());
+        telemetry.addData("ArmPower",arm.getPower());
+        telemetry.addData("ArmOffset",arm.getOffset());
         telemetry.addData("deltatime",deltaTime);
-        //if (driverA.onButtonPress(Controller.Button.dPadDown)) {
-        //    arm.extendToTarget(0,0.5);
-        //}
-        //if(driverA.toggleButtonState(Controller.Button.y)){
-        //    driveTrain.setDrivePowerCoefficient(0.5);
-        //    driveTrain.setTurnPowerCoefficient(0.5);
-        //}
-        //else{
-        //    driveTrain.setDrivePowerCoefficient(1);
-        //    driveTrain.setTurnPowerCoefficient(1);
-        //}
-
-        //setting up controller input to drivetrain output ratios//
-        //------------------------------------------------------//
 
 
-        //telemetry.addData("Smoothing? ",arm.isSmoothing());
-        //YOU NEED THESE FOR CONTROLLER AND SAFETY CHECKS
         driverA.updateAll();
 
     }

@@ -32,9 +32,9 @@ public class LedTest extends OpMode{
     // Declare HardWare.
     public Controller driverA = null;
     //public Servo indicator = null;
-    public double LedColor = 0.277;
+    public double LedColor = 0.0;
     public boolean Reversed = true;
-    public static double UpdateSpeed = 0.001;
+    public static double UpdateSpeed = 0.0001;
     public LEDcontroller indicator = null;
     /*
      * Code to run ONCE when the Driver hits INIT
@@ -51,6 +51,20 @@ public class LedTest extends OpMode{
      */
     @Override
     public void init_loop () {
+        if (Reversed){
+            LedColor -= UpdateSpeed;
+        } else {
+            LedColor += UpdateSpeed;
+        }
+        if (LedColor>0.722-UpdateSpeed&& !Reversed){
+            Reversed = true;
+        }
+        if (LedColor<0.277+UpdateSpeed&& Reversed){
+            Reversed = false;
+        }
+        telemetry.addData("LedColor",LedColor);
+        telemetry.addData("UpdateSpeed",UpdateSpeed);
+        indicator.SetColor(LedColor);
     }
 
     /*
@@ -72,13 +86,14 @@ public class LedTest extends OpMode{
         } else {
             LedColor += UpdateSpeed;
         }
-        if (LedColor>0.722-UpdateSpeed){
+        if (LedColor>0.722-UpdateSpeed&& !Reversed){
             Reversed = true;
         }
-        if (LedColor<0.277+UpdateSpeed){
+        if (LedColor<0.277+UpdateSpeed&& Reversed){
             Reversed = false;
         }
         telemetry.addData("LedColor",LedColor);
+        telemetry.addData("UpdateSpeed",UpdateSpeed);
         indicator.SetColor(LedColor);
 
     }
