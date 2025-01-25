@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.*;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.bosons.AutoHardware.Wrist;
 import com.bosons.Hardware.Arm;
 import com.bosons.Hardware.DriveTrain;
 import com.bosons.Hardware.Extender;
-import com.bosons.Hardware.Motor;
+import com.bosons.Hardware.Hand;
+import com.bosons.Utils.LEDcontroller;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -28,23 +32,40 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name="TeleOp", group="Dev")
 
 public class TeleOpWIP extends OpMode {
+    enum pose{
+        intake,
+        highBucket,
+        lowBucket,
+        specimenHigh,
+        specimenLow,
+        home,
+    }
+
     // Declare HardWare.
     public Controller driverA = null;
     public Arm arm = null;
+    public Hand hand = null;
     public Extender extendo = null;
     public DriveTrain driveTrain = null;
     public Boolean isHomed = false;
+    public double LedColor = 0.722;
+    public boolean Reversed = true;
+    public static double UpdateSpeed = 0.0001;
+    public LEDcontroller indicator = null;
+    pose currentPose = pose.home;
     /*
      * Code to run ONCE when the Driver hits INIT
      */
+
     @Override
     public void init () {
+        hand = new Hand(this);
         arm = new Arm(this);
         driveTrain = new DriveTrain(this);
+        indicator = new LEDcontroller("LedOne","LedTwo",this);
         driverA = new Controller(gamepad1);
         extendo = new Extender(this);
         telemetry.addData("Status", "Initialized");
-
     }
 
     /*
@@ -52,6 +73,20 @@ public class TeleOpWIP extends OpMode {
      */
     @Override
     public void init_loop () {
+        if (Reversed){
+            LedColor -= UpdateSpeed;
+        } else {
+            LedColor += UpdateSpeed;
+        }
+        if (LedColor>0.722-UpdateSpeed&& !Reversed){
+            Reversed = true;
+        }
+        if (LedColor<0.277+UpdateSpeed&& Reversed){
+            Reversed = false;
+        }
+        telemetry.addData("LedColor",LedColor);
+        telemetry.addData("UpdateSpeed",UpdateSpeed);
+        indicator.SetColor(LedColor);
     }
 
     /*
@@ -78,22 +113,29 @@ public class TeleOpWIP extends OpMode {
         double theta = Math.atan2(y, x);
         driveTrain.drive(p , theta, turn);
 
-        if (!isHomed){
-            arm.Home();
-            isHomed = true;
-        }
-
         if (driverA.onButtonPress(Controller.Button.rightBumper)){
             arm.Home();
         }
 
+        if (Math.abs(arm.getCurrentPositionInDegrees())>30)
+            arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
 
 
         if (driverA.toggleButtonState(Controller.Button.a)){
-            arm.RotateArm(180);
+           hand.setPose(Hand.Pose.open);
         }else{
-            arm.RotateArm(0);
+            hand.setPose(Hand.Pose.close);
         }
+
+        if (driverA.onButtonPress(Controller.Button.x)) {
+            if (currentPose==pose.intake){
+                currentPose = pose.home;
+            }else{
+                currentPose = pose.intake;
+            }
+        }
+
+
 
         /*
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
@@ -101,11 +143,6 @@ public class TeleOpWIP extends OpMode {
         }
         */
 
-        if (driverA.onButtonPress(Controller.Button.dPadUp)){
-            extendo.ExtendToTarget(8000);
-        }else if (driverA.onButtonPress(Controller.Button.dPadDown)){
-            extendo.ExtendToTarget(0);
-        }
         double deltaTime = getRuntime() - runtime;
 
         telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
@@ -117,6 +154,33 @@ public class TeleOpWIP extends OpMode {
         telemetry.addData("ArmOffset",arm.getOffset());
         telemetry.addData("deltatime",deltaTime);
 
+        switch (currentPose){
+            case home:{
+                extendo.ExtendToTarget(0);
+                hand.setRotat(0.0);
+                arm.setRotat(0);
+                break;
+            }
+            case intake:{
+                extendo.ExtendToTarget(0);
+                arm.setRotat(-90);
+                hand.setRotat(0.6);
+                break;
+            }
+            case lowBucket:{
+                break;
+            }
+            case highBucket:{
+                break;
+            }
+            case specimenLow:{
+                break;
+            }
+            case specimenHigh:{
+                break;
+            }
+
+        }
 
         driverA.updateAll();
 

@@ -15,12 +15,11 @@ public class Arm {
     //opMode for telemetry and hardware map;
     public OpMode opm;
     private int offset;
-    private Boolean Homing;
+    private Boolean Homing = false;
     //arm extension motors
     public Motor arm;
     public Servo ext = null;
     public DigitalChannel home;
-
     private int TicksInDegree = (int) 5281.1/360;
 
     public Arm(OpMode opMode){
@@ -41,6 +40,9 @@ public class Arm {
     public int getCurrentPosition(){
         return arm.getCurrentPosition()-offset;
     }
+    public int getCurrentPositionInDegrees(){
+        return (arm.getCurrentPosition()-offset)/TicksInDegree;
+    }
 
     public double getPower(){
         return arm.getPower();
@@ -55,7 +57,7 @@ public class Arm {
             else{arm.setTargetPosition(-1000);}
         }
     }
-    public void RotateArm(int degrees){
+    public void setRotat(int degrees){
         if (!home.getState()){
             offset = arm.getCurrentPosition();
         }
