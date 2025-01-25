@@ -15,12 +15,15 @@ public class Hand {
     public Hand(OpMode OPmode){
         claw = OPmode.hardwareMap.get(Servo.class,"claw");
         wrist = OPmode.hardwareMap.get(Servo.class,"wrist");
+        claw.setPosition(1);
+        wrist.setPosition(1);
     }
 
-    public void setPose(Pose pose){
+    public void grip(Pose pose){
         switch (pose){
             case open: {
                 setPosition(0.0);
+                break;
             }
             case close: {
                 setPosition(1.0);

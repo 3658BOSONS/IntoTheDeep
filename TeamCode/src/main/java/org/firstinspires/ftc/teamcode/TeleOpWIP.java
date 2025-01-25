@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.bosons.Utils.Controller;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -47,7 +48,6 @@ public class TeleOpWIP extends OpMode {
     public Hand hand = null;
     public Extender extendo = null;
     public DriveTrain driveTrain = null;
-    public Boolean isHomed = false;
     public double LedColor = 0.722;
     public boolean Reversed = true;
     public static double UpdateSpeed = 0.0001;
@@ -94,7 +94,7 @@ public class TeleOpWIP extends OpMode {
      */
     @Override
     public void start () {
-        //driverA.updateAll();
+        //
     }
 
     /*
@@ -102,6 +102,14 @@ public class TeleOpWIP extends OpMode {
      */
     @Override
     public void loop () {
+        if (arm.Homing){
+            indicator.SetColor("red");
+            if (arm.getHomeState()){
+                indicator.SetColor("green");
+            }
+        }
+        arm.Home();
+
         double runtime = getRuntime();
 
 
@@ -117,31 +125,67 @@ public class TeleOpWIP extends OpMode {
             arm.Home();
         }
 
-        if (Math.abs(arm.getCurrentPositionInDegrees())>30)
+        if (Math.abs(arm.getCurrentPositionInDegrees())>30) {
             arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
+        }
+        else{
+            arm.extendoServo(0);
+        }
 
+
+        //if(driverA.onButtonPress(Controller.Button.dPadUp)){
+        //    arm.setRotat(180);
+        //}
+        //if (driverA.onButtonPress(Controller.Button.dPadDown)&&driverA.onButtonHold(Controller.Button.leftBumper)) {
+        //    arm.setRotat(-180);
+        //}
+        //if(driverA.onButtonPress(Controller.Button.dPadDown)){
+        //    arm.setRotat(180);
+        //}
 
         if (driverA.toggleButtonState(Controller.Button.a)){
-           hand.setPose(Hand.Pose.open);
+           hand.grip(Hand.Pose.open);
         }else{
-            hand.setPose(Hand.Pose.close);
+            hand.grip(Hand.Pose.close);
         }
 
         if (driverA.onButtonPress(Controller.Button.x)) {
             if (currentPose==pose.intake){
                 currentPose = pose.home;
+                indicator.SetColor("blue");
             }else{
                 currentPose = pose.intake;
+                indicator.SetColor("azure");
+            }
+        }
+
+        if (driverA.onButtonPress(Controller.Button.y)) {
+            if (currentPose==pose.specimenHigh){
+                currentPose = pose.home;
+                indicator.SetColor("blue");
+            }else{
+                currentPose = pose.specimenHigh;
+                indicator.SetColor("azure");
+            }
+        }
+
+        if (driverA.onButtonPress(Controller.Button.b)) {
+            if (currentPose==pose.highBucket){
+                currentPose = pose.home;
+                indicator.SetColor("blue");
+            }else{
+                currentPose = pose.highBucket;
+                indicator.SetColor("azure");
             }
         }
 
 
 
-        /*
+
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
             extendo.FORBIDDIN();
         }
-        */
+
 
         double deltaTime = getRuntime() - runtime;
 
@@ -153,33 +197,42 @@ public class TeleOpWIP extends OpMode {
         telemetry.addData("ArmPower",arm.getPower());
         telemetry.addData("ArmOffset",arm.getOffset());
         telemetry.addData("deltatime",deltaTime);
+        telemetry.addData("armDegrees",arm.getCurrentPositionInDegrees());
+        telemetry.addData("rightTrigger",driverA.getTriggerValue(Controller.Trigger.Right));
 
-        switch (currentPose){
-            case home:{
-                extendo.ExtendToTarget(0);
-                hand.setRotat(0.0);
-                arm.setRotat(0);
-                break;
+        if(!arm.Homing) {
+            switch (currentPose) {
+                case home: {
+                    extendo.ExtendToTarget(0);
+                    hand.setRotat(1);
+                    arm.setRotat(0);
+                    break;
+                }
+                case intake: {
+                    extendo.ExtendToTarget(0);
+                    arm.setRotat(-90);
+                    hand.setRotat(0.6);
+                    break;
+                }
+                case lowBucket: {
+                    break;
+                }
+                case highBucket: {
+                    extendo.ExtendToTarget(8000);
+                    arm.setRotat(-180);
+                    hand.setRotat(1);
+                    break;
+                }
+                case specimenLow: {
+                    break;
+                }
+                case specimenHigh: {
+                    extendo.ExtendToTarget(0);
+                    arm.setRotat(-180);
+                    hand.setRotat(1);
+                    break;
+                }
             }
-            case intake:{
-                extendo.ExtendToTarget(0);
-                arm.setRotat(-90);
-                hand.setRotat(0.6);
-                break;
-            }
-            case lowBucket:{
-                break;
-            }
-            case highBucket:{
-                break;
-            }
-            case specimenLow:{
-                break;
-            }
-            case specimenHigh:{
-                break;
-            }
-
         }
 
         driverA.updateAll();

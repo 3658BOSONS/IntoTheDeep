@@ -10,19 +10,24 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.TeleOpWIP;
+
 @Config
 public class Arm {
     //opMode for telemetry and hardware map;
     public OpMode opm;
     private int offset;
-    private Boolean Homing = false;
+    public Boolean Homing = true;
+    private Boolean HomeInit = false;
     //arm extension motors
     public Motor arm;
+    private int attempts = 1;
     public Servo ext = null;
     public DigitalChannel home;
     private int TicksInDegree = (int) 5281.1/360;
 
     public Arm(OpMode opMode){
+        opm = opMode;
         arm = new Motor("arm",opMode);
         ext = opMode.hardwareMap.get(Servo.class,"armExt");
         arm.setPower(0.0);
@@ -49,18 +54,36 @@ public class Arm {
     }
 
     public void Home(){
-        if (!Homing){
-            if (!home.getState()) {
-                offset = arm.getCurrentPosition();
-                Homing = false;
+
+        opm.telemetry.addData("Home Button", home.getState());
+        if (Homing){
+            if(home.getState()){
+                arm.setPower(0.15);
+                if (!HomeInit){
+                    arm.setTargetPosition(TicksInDegree*90);
+                    HomeInit = true;
+                }
             }
-            else{arm.setTargetPosition(-1000);}
+            else{
+                offset = arm.getCurrentPosition();
+                arm.setPower(0.0);
+                arm.setTargetPosition(0);
+                Homing = false;
+                HomeInit = false;
+                attempts = 1;
+                return;
+            }
+            if(Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 30){
+                opm.telemetry.addData("TargetDistance",(arm.getCurrentPosition() - arm.getTargetPosition()));
+                arm.setTargetPosition((arm.getTargetPosition()*-1)*attempts);
+                attempts+=1;
+            }
         }
     }
     public void setRotat(int degrees){
-        if (!home.getState()){
-            offset = arm.getCurrentPosition();
-        }
+        //if (!home.getState()){
+        //    offset = arm.getCurrentPosition();
+        //}
         double TicksAsDegrees = degrees*TicksInDegree;
         if (degrees>=180) {
             arm.setTargetPosition((180 * TicksInDegree) + offset);
@@ -74,10 +97,12 @@ public class Arm {
             arm.setPower(1.0);
         }
     }
-
+    public boolean getHomeState(){
+        return !home.getState();
+    }
     public void extendoServo(double extTarget){
-        extTarget=max(extTarget, 1.0);
-        extTarget=min(extTarget, 0.0);
+        //extTarget=max(extTarget, 1.0);
+        //extTarget=min(extTarget, 0.0);
         ext.setPosition(extTarget);
     }
 
