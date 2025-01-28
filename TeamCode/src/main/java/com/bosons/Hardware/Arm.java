@@ -60,7 +60,7 @@ public class Arm {
             if(home.getState()){
                 arm.setPower(0.15);
                 if (!HomeInit){
-                    arm.setTargetPosition(TicksInDegree*90);
+                    arm.setTargetPosition(TicksInDegree*45);
                     HomeInit = true;
                 }
             }
@@ -96,6 +96,7 @@ public class Arm {
         }else{
             arm.setPower(1.0);
         }
+        opm.telemetry.addData("armPower",getPower());
     }
     public boolean getHomeState(){
         return !home.getState();

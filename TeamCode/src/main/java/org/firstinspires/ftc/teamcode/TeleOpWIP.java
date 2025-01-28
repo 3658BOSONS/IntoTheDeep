@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Math.*;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.bosons.AutoHardware.Wrist;
 import com.bosons.Hardware.Arm;
 import com.bosons.Hardware.DriveTrain;
 import com.bosons.Hardware.Extender;
@@ -13,8 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.bosons.Utils.Controller;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -35,11 +31,16 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 public class TeleOpWIP extends OpMode {
     enum pose{
         intake,
-        highBucket,
-        lowBucket,
-        specimenHigh,
-        specimenLow,
+        bucket,
+        specimen,
         home,
+        climb0,
+        climb1
+
+    }
+    enum height{
+        high,
+        low
     }
 
     // Declare HardWare.
@@ -51,8 +52,12 @@ public class TeleOpWIP extends OpMode {
     public double LedColor = 0.722;
     public boolean Reversed = true;
     public static double UpdateSpeed = 0.0001;
+
+    public ElapsedTime LEDTimer = new ElapsedTime();
     public LEDcontroller indicator = null;
     pose currentPose = pose.home;
+    height currentHeight = height.high;
+
     /*
      * Code to run ONCE when the Driver hits INIT
      */
@@ -73,20 +78,28 @@ public class TeleOpWIP extends OpMode {
      */
     @Override
     public void init_loop () {
-        if (Reversed){
-            LedColor -= UpdateSpeed;
-        } else {
-            LedColor += UpdateSpeed;
+        //if (Reversed){
+        //    LedColor -= UpdateSpeed;
+        //} else {
+        //    LedColor += UpdateSpeed;
+        //}
+        //if (LedColor>0.722-UpdateSpeed&& !Reversed){
+        //    Reversed = true;
+        //}
+        //if (LedColor<0.277+UpdateSpeed&& Reversed){
+        //    Reversed = false;
+        //}
+        //telemetry.addData("LedColor",LedColor);
+        //telemetry.addData("UpdateSpeed",UpdateSpeed);
+        //indicator.SetColor(LedColor);
+
+        if(LEDTimer.seconds()>=2 && LEDTimer.seconds()<4) {
+            indicator.SetColor("azure");
+        } else if (LEDTimer.seconds()>=4) {
+            indicator.SetColor(0);
+            LEDTimer.reset();
         }
-        if (LedColor>0.722-UpdateSpeed&& !Reversed){
-            Reversed = true;
-        }
-        if (LedColor<0.277+UpdateSpeed&& Reversed){
-            Reversed = false;
-        }
-        telemetry.addData("LedColor",LedColor);
-        telemetry.addData("UpdateSpeed",UpdateSpeed);
-        indicator.SetColor(LedColor);
+
     }
 
     /*
@@ -112,7 +125,7 @@ public class TeleOpWIP extends OpMode {
 
         double runtime = getRuntime();
 
-
+        //Drive
         double x = -driverA.getAnalogValue(Controller.Joystick.LeftX) * 1.5;
         double y = driverA.getAnalogValue(Controller.Joystick.LeftY) * 1.5;
         double turn = -driverA.getAnalogValue(Controller.Joystick.RightX)/1.2;
@@ -121,61 +134,47 @@ public class TeleOpWIP extends OpMode {
         double theta = Math.atan2(y, x);
         driveTrain.drive(p , theta, turn);
 
-        if (driverA.onButtonPress(Controller.Button.rightBumper)){
-            arm.Home();
-        }
-
-        if (Math.abs(arm.getCurrentPositionInDegrees())>30) {
-            arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
+        //Arm controls
+        if (Math.abs(arm.getCurrentPositionInDegrees())>30 && currentPose != pose.home) {
+            //arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
         }
         else{
             arm.extendoServo(0);
         }
 
+        if (driverA.onButtonPress(Controller.Button.dPadUp)){
+            currentHeight = height.high;
+        } else if (driverA.onButtonPress(Controller.Button.dPadDown)) {
+            currentHeight = height.low;
+        }
 
-        //if(driverA.onButtonPress(Controller.Button.dPadUp)){
-        //    arm.setRotat(180);
-        //}
-        //if (driverA.onButtonPress(Controller.Button.dPadDown)&&driverA.onButtonHold(Controller.Button.leftBumper)) {
-        //    arm.setRotat(-180);
-        //}
-        //if(driverA.onButtonPress(Controller.Button.dPadDown)){
-        //    arm.setRotat(180);
-        //}
-
-        if (driverA.toggleButtonState(Controller.Button.a)){
-           hand.grip(Hand.Pose.open);
+        if (!driverA.toggleButtonState(Controller.Button.a)||Math.abs(arm.getCurrentPositionInDegrees())<90){
+           hand.grip(Hand.Pose.close);
         }else{
-            hand.grip(Hand.Pose.close);
+            hand.grip(Hand.Pose.open);
         }
 
         if (driverA.onButtonPress(Controller.Button.x)) {
             if (currentPose==pose.intake){
                 currentPose = pose.home;
-                indicator.SetColor("blue");
             }else{
                 currentPose = pose.intake;
-                indicator.SetColor("azure");
-            }
-        }
-
-        if (driverA.onButtonPress(Controller.Button.y)) {
-            if (currentPose==pose.specimenHigh){
-                currentPose = pose.home;
-                indicator.SetColor("blue");
-            }else{
-                currentPose = pose.specimenHigh;
-                indicator.SetColor("azure");
             }
         }
 
         if (driverA.onButtonPress(Controller.Button.b)) {
-            if (currentPose==pose.highBucket){
+            if (currentPose==pose.specimen){
                 currentPose = pose.home;
-                indicator.SetColor("blue");
             }else{
-                currentPose = pose.highBucket;
-                indicator.SetColor("azure");
+                currentPose = pose.specimen;
+            }
+        }
+
+        if (driverA.onButtonPress(Controller.Button.y)) {
+            if (currentPose==pose.bucket){
+                currentPose = pose.home;
+            }else{
+                currentPose = pose.bucket;
             }
         }
 
@@ -183,7 +182,7 @@ public class TeleOpWIP extends OpMode {
 
 
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
-            extendo.FORBIDDIN();
+            //extendo.FORBIDDIN();
         }
 
 
@@ -203,33 +202,63 @@ public class TeleOpWIP extends OpMode {
         if(!arm.Homing) {
             switch (currentPose) {
                 case home: {
+                    indicator.SetColor("green");
                     extendo.ExtendToTarget(0);
                     hand.setRotat(1);
                     arm.setRotat(0);
                     break;
                 }
                 case intake: {
+                    indicator.SetColor("blue");
                     extendo.ExtendToTarget(0);
-                    arm.setRotat(-90);
-                    hand.setRotat(0.6);
+                    arm.setRotat(-100);
+                    if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                        hand.setRotat(0.6);
+                        arm.extendoServo((driverA.getTriggerValue(Controller.Trigger.Right)/2)+0.5);
+                    }
                     break;
                 }
-                case lowBucket: {
+                case bucket: {
+                    indicator.SetColor("yellow");
+                    switch (currentHeight){
+                        case low:{
+                            extendo.ExtendToTarget(0);//8000
+                            arm.setRotat(160);
+                            if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                                arm.extendoServo(1);
+                                hand.setRotat(0.5);
+                            }
+                            break;
+                        }
+                        case high:{
+                            extendo.ExtendToTarget(4000);//8000
+                            arm.setRotat(160);
+                            if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                                arm.extendoServo(1);
+                                hand.setRotat(0.5);
+                            }
+                            break;
+                        }
+                    }
                     break;
                 }
-                case highBucket: {
-                    extendo.ExtendToTarget(8000);
+                case specimen: {
+                    indicator.SetColor("red");
+                    switch (currentHeight){
+                        case low:{
+                            break;
+                        }
+                        case high:{
+                            break;
+                        }
+                    }
+                    extendo.ExtendToTarget(0);
                     arm.setRotat(-180);
                     hand.setRotat(1);
-                    break;
-                }
-                case specimenLow: {
-                    break;
-                }
-                case specimenHigh: {
-                    extendo.ExtendToTarget(0);
-                    arm.setRotat(-180);
-                    hand.setRotat(1);
+                    if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                        arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
+                    }
+
                     break;
                 }
             }
