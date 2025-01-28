@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
+import com.bosons.AutoHardware.Extender;
+import com.bosons.AutoHardware.Hand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
@@ -16,20 +18,19 @@ import com.acmerobotics.roadrunner.SequentialAction;
 //Non road runner Imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
-
 //Boson Imports
 import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Config
-@Autonomous(name = "AutoDev", group = "Dev")
+@Autonomous(name = "AutoMain", group = "Comp",preselectTeleOp = "TeleOp")
 public class AutoDev extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
         return new SleepAction(milliseconds/1000.0);
     }
-
     @Override
     public void waitForStart() {
         super.waitForStart();
@@ -37,7 +38,7 @@ public class AutoDev extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        if (isStopRequested()) return;
         waitForStart();
         //Tool Definitions
 
@@ -45,14 +46,15 @@ public class AutoDev extends LinearOpMode {
         Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
         Pose2d IntakeOne = new Pose2d(49.0,44,Math.toRadians(90));
         Pose2d IntakeTwo = new Pose2d(59.0,44,Math.toRadians(90));
-        Pose2d BlueNet = new Pose2d(55.0,55.0,Math.toRadians(45));
+        Pose2d BlueNet = new Pose2d(50.0,50.0,Math.toRadians(45));
 
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        Extender exendo = new Extender(this);
         Intake intake = new Intake(hardwareMap);
         Wrist wrist = new Wrist(hardwareMap);
-        Arm arm = new Arm(hardwareMap);
-
+        Hand hand = new Hand(hardwareMap);
+        Arm arm = new Arm(this);
         //ACTION SHORTCUTS
 
 
@@ -60,32 +62,21 @@ public class AutoDev extends LinearOpMode {
         SequentialAction homeArm = new SequentialAction(
                 intake.Stop(),
                 wrist.intake(),
-                arm.home(),
+                arm.Zero(),
                 wrist.zero()
         );
-        //set the arm to the default position again
+
         SequentialAction homeArm2 = new SequentialAction(
                 intake.Stop(),
-                wrist.straight(),
-                arm.home(),
+                wrist.intake(),
+                arm.Zero(),
                 wrist.zero()
         );
+
         SequentialAction homeArm3 = new SequentialAction(
                 intake.Stop(),
                 wrist.intake(),
-                arm.home(),
-                wrist.zero()
-        );
-        SequentialAction homeArm4 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.home(),
-                wrist.zero()
-        );
-        SequentialAction homeArm5 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.home(),
+                arm.Zero(),
                 wrist.zero()
         );
         //move arm to intake position and grab cube
@@ -93,44 +84,59 @@ public class AutoDev extends LinearOpMode {
                 wrist.intake(),
                 intake.spinIn()
         );
+        SequentialAction ExtendToHighBucket = new SequentialAction(
+                hand.close(),
+                hand.Intake(),
+                arm.Bucket(),
+                exendo.HighBucket()
+        );
+        SequentialAction ExtendToHighBucket2 = new SequentialAction(
+                hand.close(),
+                hand.Intake(),
+                arm.Bucket(),
+                exendo.HighBucket()
+        );
+        SequentialAction ExtendToHighBucket3 = new SequentialAction(
+                hand.close(),
+                hand.Intake(),
+                arm.Bucket(),
+                exendo.HighBucket()
+        );
+
+
+
         //move arm to High bucket and drop specimen
         SequentialAction dumpInHighBucket = new SequentialAction(
-                wrist.straight(),
-                arm.bucketHigh(),
-                wrist.bucket(),
-                intake.spinOut(),
-                sleeb(500),
-                wrist.straight(),
-                sleeb(100)
+                hand.close(),
+                hand.Bucket(),
+                arm.Bucket(),
+                hand.open()
         );
+
         SequentialAction dumpInHighBucket2 = new SequentialAction(
-                wrist.straight(),
-                arm.bucketHigh(),
-                wrist.bucket(),
-                intake.spinOut(),
-                sleeb(500),
-                wrist.straight(),
-                sleeb(100)
+                hand.close(),
+                hand.Bucket(),
+                arm.Bucket(),
+                hand.open()
         );
+
         SequentialAction dumpInHighBucket3 = new SequentialAction(
-                wrist.straight(),
-                arm.bucketHigh(),
-                wrist.bucket(),
-                intake.spinOut(),
-                sleeb(500),
-                wrist.straight(),
-                sleeb(100)
+                hand.close(),
+                hand.Bucket(),
+                arm.Bucket(),
+                hand.open()
         );
 
         SequentialAction IntakeCube = new SequentialAction(
                 wrist.intake(),
                 intake.spinIn(),
-                arm.intakeActive()
+                arm.Intake()
         );
+
         SequentialAction IntakeCube2 = new SequentialAction(
                 wrist.intake(),
                 intake.spinIn(),
-                arm.intakeActive()
+                arm.Intake()
         );
 
 
@@ -149,10 +155,13 @@ public class AutoDev extends LinearOpMode {
                 .splineToLinearHeading(BlueNet,60.0);
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
-                .lineToY(58.0);
+                .lineToY(56.0);
+
+        TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
+                .lineToY(54.0);
 
         TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
-                .lineToYLinearHeading(.0,Math.toRadians(0))
+                .lineToYLinearHeading(38.0,Math.toRadians(0))
                 .setTangent(Math.toRadians(0))
                 .lineToXLinearHeading(-36.0,Math.toRadians(0))
                 .strafeTo(new Vector2d(-36.0,70.5-8.375));
@@ -176,43 +185,26 @@ public class AutoDev extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        //sleeb(500),
                         wrist.zero(),
-                        Bucket1.build(),
+                        //Bucket1.build(),
                         wrist.straight(),
-                        arm.bucketHigh(),
-                        inchForward.build(),
+                        ExtendToHighBucket,
+                        //inchForward.build(),
                         dumpInHighBucket,
-                        new ParallelAction(
-                                homeArm,
-                                intakeOne.build()
-                        ),
+                        homeArm,
+                        //intakeOne.build(),
                         //Do Intake Stuff
                         IntakeCube,
-                        intakeOneInch.build(),
+                        //intakeOneInch.build(),
                         //bucket stuff
                         homeArm2,
-                        Bucket2.build(),
+                        //Bucket2.build(),
                         wrist.straight(),
-                        arm.bucketHigh(),
-                        inchForward.build(),
-                        dumpInHighBucket2,
-                        new ParallelAction(
-                                homeArm3,
-                                intakeTwo.build()
-                        ),
-                        //Do Intake Stuff
-                        IntakeCube2,
-                        intakeTwoInch.build(),
-                        //bucket stuff
-                        homeArm4,
-                        Bucket3.build(),
-                        wrist.straight(),
-                        arm.bucketHigh(),
-                        inchForward.build(),
-                        dumpInHighBucket3,
-                        homeArm5,
-                        park.build()
+                        ExtendToHighBucket2,
+                        //inchForward2.build(),
+                        //dumpInHighBucket2,
+                        homeArm3
+                        //park.build()
                 )
         );
     }

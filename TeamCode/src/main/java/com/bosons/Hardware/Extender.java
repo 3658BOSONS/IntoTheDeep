@@ -1,5 +1,13 @@
 package com.bosons.Hardware;
 
+import static java.lang.Math.abs;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.bosons.AutoHardware.Arm;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +26,7 @@ public class Extender {
         right.setTargetPosition(0);
         right.setConstants(DcMotor.RunMode.RUN_TO_POSITION,DcMotor.ZeroPowerBehavior.BRAKE,DcMotor.Direction.REVERSE);
     }
+
     public double[] getPower(){
         return(new double[]{right.getPower(), left.getPower()});
     }
@@ -27,12 +36,12 @@ public class Extender {
     }
     public void FORBIDDIN(){
         int pips = -8000;
-        if (Math.abs(pips - right.getCurrentPosition())<=10){
+        if (abs(pips - right.getCurrentPosition())<=10){
             right.setPower(0.0);
         }else{
             right.setPower(1.0);
         }
-        if (Math.abs(pips - left.getCurrentPosition())<=10){
+        if (abs(pips - left.getCurrentPosition())<=10){
             left.setPower(0.0);
         }else{
             left.setPower(1.0);
@@ -47,12 +56,12 @@ public class Extender {
         if (pips<0){
             pips = 0;
         }
-        if (Math.abs(pips - right.getCurrentPosition())<=10){
+        if (abs(pips - right.getCurrentPosition())<=10){
             right.setPower(0.0);
         }else{
             right.setPower(1.0);
         }
-        if (Math.abs(pips - left.getCurrentPosition())<=10){
+        if (abs(pips - left.getCurrentPosition())<=10){
             left.setPower(0.0);
         }else{
             left.setPower(1.0);

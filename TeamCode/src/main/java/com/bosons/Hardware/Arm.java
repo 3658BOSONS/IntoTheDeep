@@ -41,7 +41,6 @@ public class Arm {
     public int getOffset(){
         return offset;
     }
-
     public int getCurrentPosition(){
         return arm.getCurrentPosition()-offset;
     }
