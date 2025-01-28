@@ -91,7 +91,7 @@ public class Arm {
         else{
             arm.setTargetPosition(degrees*TicksInDegree + offset);
         }
-        if (Math.abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
+        if (Math.abs(TicksAsDegrees - arm.getCurrentPosition())<=30){
             arm.setPower(0.0);
         }else{
             arm.setPower(1.0);

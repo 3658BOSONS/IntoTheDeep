@@ -178,7 +178,14 @@ public class TeleOpWIP extends OpMode {
             }
         }
 
-
+        if(driverA.onButtonPress(Controller.Button.rightBumper)){
+            if(currentPose==pose.climb0){
+                currentPose = pose.climb1;
+            }
+            else{
+                currentPose = pose.climb0;
+            }
+        }
 
 
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
@@ -214,7 +221,7 @@ public class TeleOpWIP extends OpMode {
                     arm.setRotat(-100);
                     if(Math.abs(arm.getCurrentPositionInDegrees())>50){
                         hand.setRotat(0.6);
-                        arm.extendoServo((driverA.getTriggerValue(Controller.Trigger.Right)/2)+0.5);
+                        arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
                     }
                     break;
                 }
@@ -228,14 +235,22 @@ public class TeleOpWIP extends OpMode {
                                 arm.extendoServo(1);
                                 hand.setRotat(0.5);
                             }
+                            else{
+                                arm.extendoServo(0);
+                                hand.setRotat(1);
+                            }
                             break;
                         }
                         case high:{
-                            extendo.ExtendToTarget(4000);//8000
+                            extendo.ExtendToTarget(6500);//8000
                             arm.setRotat(160);
                             if(Math.abs(arm.getCurrentPositionInDegrees())>50){
                                 arm.extendoServo(1);
                                 hand.setRotat(0.5);
+                            }
+                            else{
+                                arm.extendoServo(0);
+                                hand.setRotat(1);
                             }
                             break;
                         }
@@ -259,6 +274,20 @@ public class TeleOpWIP extends OpMode {
                         arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
                     }
 
+                    break;
+                }
+                case climb0:{
+                    arm.setRotat(90);
+                    hand.setRotat(1);
+                    arm.extendoServo(0);
+                    extendo.ExtendToTarget(6500);
+                    break;
+                }
+                case climb1:{
+                    arm.setRotat(90);
+                    hand.setRotat(1);
+                    arm.extendoServo(0);
+                    extendo.ExtendToTarget(0);
                     break;
                 }
             }
