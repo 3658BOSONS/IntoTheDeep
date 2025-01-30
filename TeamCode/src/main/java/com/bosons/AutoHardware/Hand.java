@@ -22,6 +22,7 @@ public class Hand {
     public class open implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandOpen");
             double TargetPos = 0;
                 if (TargetPos>1){
                     TargetPos = 1;
@@ -37,6 +38,7 @@ public class Hand {
     public class close implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandClose");
             double TargetPos = 1;
             if (TargetPos>1){
                 TargetPos = 1;
@@ -52,6 +54,7 @@ public class Hand {
     public class Bucket implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandBucket");
             double TargetPos = 0.5;
             if (TargetPos>1){
                 TargetPos = 1;
@@ -67,6 +70,7 @@ public class Hand {
     public class Intake implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandIntake");
             double TargetPos = 0.6;
             if (TargetPos>1){
                 TargetPos = 1;
@@ -82,6 +86,7 @@ public class Hand {
     public class Specimen implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandSpecimen");
             double TargetPos = 1.0;
             if (TargetPos>1){
                 TargetPos = 1;

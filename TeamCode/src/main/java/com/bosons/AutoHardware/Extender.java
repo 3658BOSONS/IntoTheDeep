@@ -28,6 +28,7 @@ public class Extender {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ExtBucket");
             int pips = 100;
             if (pips > 8000){
                 pips = 8000;
@@ -47,9 +48,7 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(left.getTargetPosition() - left.getCurrentPosition()) > 30);
-
-
+            return !(abs(pips - left.getCurrentPosition()) > 30);
         }
     }
 
@@ -61,6 +60,7 @@ public class Extender {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ExtZero");
             int pips = 0;
             if (pips > 8000){
                 pips = 8000;
@@ -80,9 +80,7 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(left.getTargetPosition() - left.getCurrentPosition()) > 30);
-
-
+            return !(abs(pips - left.getCurrentPosition()) > 30);
         }
     }
 
@@ -92,8 +90,10 @@ public class Extender {
 
     public class intake implements Action {
 
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ExtIntake");
             int pips = 100;
             if (pips > 8000){
                 pips = 8000;
@@ -113,9 +113,7 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(left.getTargetPosition() - left.getCurrentPosition()) > 30);
-
-
+            return !(abs(pips - left.getCurrentPosition()) > 30);
         }
     }
 
@@ -127,6 +125,7 @@ public class Extender {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ExtSpecimen");
             int pips = 0;
             if (pips > 8000){
                 pips = 8000;
@@ -146,9 +145,7 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(left.getTargetPosition() - left.getCurrentPosition()) > 30);
-
-
+            return !(abs(pips - left.getCurrentPosition()) > 30);
         }
     }
 
@@ -160,6 +157,7 @@ public class Extender {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","LowBucket");
             int pips = 0;
             if (pips > 8000){
                 pips = 8000;
@@ -179,9 +177,7 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(left.getTargetPosition() - left.getCurrentPosition()) > 30);
-
-
+            return !(abs(pips - left.getCurrentPosition()) > 30);
         }
     }
 

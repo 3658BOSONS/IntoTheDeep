@@ -44,6 +44,7 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmBucket");
             int degrees = 160;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
@@ -57,7 +58,7 @@ public class Arm {
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30);
+            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
         }
     }
 
@@ -70,6 +71,7 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmSpecimen");
             int degrees = -180;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
@@ -83,7 +85,7 @@ public class Arm {
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30);
+            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
         }
     }
 
@@ -95,6 +97,7 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmIntake");
             int degrees = -100;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
@@ -108,7 +111,7 @@ public class Arm {
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30);
+            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
         }
     }
 
@@ -120,6 +123,7 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmZero");
             int degrees = 0;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
@@ -133,7 +137,7 @@ public class Arm {
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30);
+            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
         }
     }
 
@@ -146,6 +150,7 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmHome");
             if (Homing){
                 if(homeSwitch.getState()){
                     arm.setPower(0.15);

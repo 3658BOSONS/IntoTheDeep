@@ -19,13 +19,10 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
 //Boson Imports
-import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
-import com.bosons.AutoHardware.Intake;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Config
-@Autonomous(name = "AutoMain", group = "Comp",preselectTeleOp = "TeleOp")
+@Autonomous(name = "AutoDev", group = "Comp",preselectTeleOp = "TeleOp")
 public class AutoDev extends LinearOpMode {
 
     public SleepAction sleeb(int milliseconds){
@@ -51,8 +48,6 @@ public class AutoDev extends LinearOpMode {
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Extender exendo = new Extender(this);
-        Intake intake = new Intake(hardwareMap);
-        Wrist wrist = new Wrist(hardwareMap);
         Hand hand = new Hand(hardwareMap);
         Arm arm = new Arm(this);
         //ACTION SHORTCUTS
@@ -60,29 +55,26 @@ public class AutoDev extends LinearOpMode {
 
         //set the arm to the default position
         SequentialAction homeArm = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.zero()
+                hand.close(),
+                hand.Intake(),
+                arm.Zero()
         );
 
         SequentialAction homeArm2 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.zero()
+                hand.close(),
+                hand.Intake(),
+                arm.Zero()
         );
 
         SequentialAction homeArm3 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.zero()
+                hand.close(),
+                hand.Intake(),
+                arm.Zero()
         );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
-                wrist.intake(),
-                intake.spinIn()
+                hand.Specimen(),
+                hand.close()
         );
         SequentialAction ExtendToHighBucket = new SequentialAction(
                 hand.close(),
@@ -128,14 +120,14 @@ public class AutoDev extends LinearOpMode {
         );
 
         SequentialAction IntakeCube = new SequentialAction(
-                wrist.intake(),
-                intake.spinIn(),
+                hand.Intake(),
+                hand.close(),
                 arm.Intake()
         );
 
         SequentialAction IntakeCube2 = new SequentialAction(
-                wrist.intake(),
-                intake.spinIn(),
+                hand.Intake(),
+                hand.close(),
                 arm.Intake()
         );
 
@@ -185,9 +177,9 @@ public class AutoDev extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        wrist.zero(),
+                        //wrist.zero(),
                         //Bucket1.build(),
-                        wrist.straight(),
+                        //wrist.straight(),
                         ExtendToHighBucket,
                         //inchForward.build(),
                         dumpInHighBucket,
@@ -199,7 +191,7 @@ public class AutoDev extends LinearOpMode {
                         //bucket stuff
                         homeArm2,
                         //Bucket2.build(),
-                        wrist.straight(),
+                        //wrist.straight(),
                         ExtendToHighBucket2,
                         //inchForward2.build(),
                         //dumpInHighBucket2,

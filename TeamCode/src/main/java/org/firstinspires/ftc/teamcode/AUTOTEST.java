@@ -45,13 +45,12 @@ public class AUTOTEST extends LinearOpMode {
 
         Intake intake = new Intake(hardwareMap);
         Wrist wrist = new Wrist(hardwareMap);
-        Arm arm = new Arm(hardwareMap);
+        Arm arm = new Arm(this);
 
         //ACTION SHORTCUTS
         SequentialAction IntakeCube = new SequentialAction(
                 wrist.intake(),
                 intake.spinIn(),
-                arm.intakeActive(),
                 sleeb(100)
         );
 
