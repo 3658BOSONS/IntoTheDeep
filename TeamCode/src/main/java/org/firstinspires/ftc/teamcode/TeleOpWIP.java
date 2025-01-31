@@ -219,9 +219,13 @@ public class TeleOpWIP extends OpMode {
                     indicator.SetColor("blue");
                     extendo.ExtendToTarget(0);
                     arm.setRotat(-100);
-                    if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                    if(arm.getCurrentPositionInDegrees()<-50){
                         hand.setRotat(0.6);
                         arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
+                    }
+                    else{
+                        hand.setRotat(1);
+                        arm.extendoServo(0);
                     }
                     break;
                 }
@@ -231,7 +235,7 @@ public class TeleOpWIP extends OpMode {
                         case low:{
                             extendo.ExtendToTarget(0);//8000
                             arm.setRotat(160);
-                            if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                            if(arm.getCurrentPositionInDegrees()>50){
                                 arm.extendoServo(1);
                                 hand.setRotat(0.5);
                             }
@@ -244,7 +248,7 @@ public class TeleOpWIP extends OpMode {
                         case high:{
                             extendo.ExtendToTarget(6500);//8000
                             arm.setRotat(160);
-                            if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                            if(arm.getCurrentPositionInDegrees()>50){
                                 arm.extendoServo(1);
                                 hand.setRotat(0.5);
                             }
@@ -268,9 +272,9 @@ public class TeleOpWIP extends OpMode {
                         }
                     }
                     extendo.ExtendToTarget(0);
-                    arm.setRotat(-180);
-                    hand.setRotat(1);
-                    if(Math.abs(arm.getCurrentPositionInDegrees())>50){
+                    arm.setRotat(-200);
+                    hand.setRotat(0.8);
+                    if(arm.getCurrentPositionInDegrees()<-50){
                         arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
                     }
 
