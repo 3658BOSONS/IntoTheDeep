@@ -39,13 +39,47 @@ public class Arm {
         offset = 0;
     }
 
+    public class ExtFull implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandOpen");
+            double TargetPos = 1.0;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            ext.setPosition(TargetPos);
+            return false;
+        }
+    }
+    public Action ExtFull(){ return new ExtFull(); }
+
+    public class ExtHome implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandOpen");
+            double TargetPos = 0.0;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            ext.setPosition(TargetPos);
+            return false;
+        }
+    }
+    public Action ExtHome(){ return new ExtHome(); }
+
+
+
 
     public class Bucket implements Action{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","ArmBucket");
-            int degrees = 160;
+            int degrees = 150;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
                 arm.setTargetPosition((180 * TicksInDegree) + offset);
@@ -54,11 +88,12 @@ public class Arm {
                 arm.setTargetPosition(degrees*TicksInDegree + offset);
             }
             if (abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
-                arm.setPower(0.0);
+                arm.setPower(1.0);
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
+            int acceptableExtensionError = 30;
+            return !(arm.burnCheck(acceptableExtensionError,false));
         }
     }
 
@@ -81,11 +116,12 @@ public class Arm {
                 arm.setTargetPosition(degrees*TicksInDegree + offset);
             }
             if (abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
-                arm.setPower(0.0);
+                arm.setPower(0.5);
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
+            int acceptableExtensionError = 30;
+            return !(arm.burnCheck(acceptableExtensionError,false));
         }
     }
 
@@ -107,11 +143,13 @@ public class Arm {
                 arm.setTargetPosition(degrees*TicksInDegree + offset);
             }
             if (abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
-                arm.setPower(0.0);
+                arm.setPower(1.0);
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
+            telemetryPacket.put("arm.getPower: ",arm.getPower());
+            int acceptableExtensionError = 30;
+            return !(arm.burnCheck(acceptableExtensionError,false));
         }
     }
 
@@ -133,11 +171,13 @@ public class Arm {
                 arm.setTargetPosition(degrees*TicksInDegree + offset);
             }
             if (abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
-                arm.setPower(0.0);
+                arm.setPower(1.0);
             }else{
                 arm.setPower(1.0);
             }
-            return !(abs(arm.getCurrentPosition() - (degrees*TicksInDegree + offset)) > 30);
+            telemetryPacket.put("arm.getPower: ",arm.getPower());
+            int acceptableExtensionError = 30;
+            return !(arm.burnCheck(acceptableExtensionError,false));
         }
     }
 
@@ -150,7 +190,6 @@ public class Arm {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetryPacket.put("Current State: ","ArmHome");
             if (Homing){
                 if(homeSwitch.getState()){
                     arm.setPower(0.15);
@@ -168,7 +207,6 @@ public class Arm {
                     attempts = 1;
                 }
                 if(abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 30){
-                    opm.telemetry.addData("TargetDistance",(arm.getCurrentPosition() - arm.getTargetPosition()));
                     arm.setTargetPosition((arm.getTargetPosition()*-1)*attempts);
                     attempts+=1;
                 }

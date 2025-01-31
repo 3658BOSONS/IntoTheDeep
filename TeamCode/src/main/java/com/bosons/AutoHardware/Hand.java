@@ -83,6 +83,22 @@ public class Hand {
     }
     public Action Intake(){ return new Intake(); }
 
+    public class home implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandIntake");
+            double TargetPos = 1.0;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            wrist.setPosition(TargetPos);
+            return false;
+        }
+    }
+    public Action home(){ return new home(); }
+
     public class Specimen implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {

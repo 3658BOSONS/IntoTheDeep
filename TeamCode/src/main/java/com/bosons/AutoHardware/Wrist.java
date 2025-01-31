@@ -16,7 +16,7 @@ public class Wrist {
     public class intake implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.5;
+            double targetPos = 0.6;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
             packet.put("Current State: ","WristIntake");
@@ -67,7 +67,7 @@ public class Wrist {
     public class straight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.5;
+            double targetPos = 0.0;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
             packet.put("Current State: ","WristStraight");
@@ -81,10 +81,10 @@ public class Wrist {
         return new straight();
     }
 
-    public class zero implements Action{
+    public class home implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double targetPos = 0.0;
+            double targetPos = 1.0;
             wristServo.setPosition(targetPos);
             double currentPos = wristServo.getPosition();
             packet.put("Current State: ","WristZero");
@@ -94,8 +94,8 @@ public class Wrist {
         }
     }
 
-    public Action zero(){
-        return new zero();
+    public Action home(){
+        return new home();
     }
 
 

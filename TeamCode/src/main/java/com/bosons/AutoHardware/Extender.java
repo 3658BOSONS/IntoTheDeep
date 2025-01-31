@@ -29,7 +29,8 @@ public class Extender {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","ExtBucket");
-            int pips = 100;
+            int pips = 6500;
+
             if (pips > 8000){
                 pips = 8000;
             }
@@ -48,7 +49,11 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(pips - left.getCurrentPosition()) > 30);
+            telemetryPacket.put("extendoPower:   ",new double[]{right.getPower(), left.getPower()});
+            telemetryPacket.put("extendoTarget:  ",new int[]{right.getTargetPosition(), left.getTargetPosition()});
+            telemetryPacket.put("extendoCurrent: ",new int[]{right.getCurrentPosition(), left.getCurrentPosition()});
+            int acceptableExtensionError = 30;
+           return !((right.burnCheck(acceptableExtensionError)&&left.burnCheck(acceptableExtensionError)));
         }
     }
 
@@ -80,7 +85,11 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(pips - left.getCurrentPosition()) > 30);
+            telemetryPacket.put("extendoPower:   ",new double[]{right.getPower(), left.getPower()});
+            telemetryPacket.put("extendoTarget:  ",new int[]{right.getTargetPosition(), left.getTargetPosition()});
+            telemetryPacket.put("extendoCurrent: ",new int[]{right.getCurrentPosition(), left.getCurrentPosition()});
+             int acceptableExtensionError = 30;
+            return !((right.burnCheck(acceptableExtensionError)&&left.burnCheck(acceptableExtensionError)));
         }
     }
 
@@ -113,7 +122,8 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(pips - left.getCurrentPosition()) > 30);
+             int acceptableExtensionError = 30;
+           return ((right.burnCheck(acceptableExtensionError)&&left.burnCheck(acceptableExtensionError)));
         }
     }
 
@@ -145,7 +155,11 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(pips - left.getCurrentPosition()) > 30);
+            telemetryPacket.put("extendoPower:   ",new double[]{right.getPower(), left.getPower()});
+            telemetryPacket.put("extendoTarget:  ",new int[]{right.getTargetPosition(), left.getTargetPosition()});
+            telemetryPacket.put("extendoCurrent: ",new int[]{right.getCurrentPosition(), left.getCurrentPosition()});
+             int acceptableExtensionError = 30;
+           return !((right.burnCheck(acceptableExtensionError)&&left.burnCheck(acceptableExtensionError)));
         }
     }
 
@@ -177,7 +191,11 @@ public class Extender {
             }
             right.setTargetPosition(pips);
             left.setTargetPosition(pips);
-            return !(abs(pips - left.getCurrentPosition()) > 30);
+            telemetryPacket.put("extendoPower:   ",new double[]{right.getPower(), left.getPower()});
+            telemetryPacket.put("extendoTarget:  ",new int[]{right.getTargetPosition(), left.getTargetPosition()});
+            telemetryPacket.put("extendoCurrent: ",new int[]{right.getCurrentPosition(), left.getCurrentPosition()});
+             int acceptableExtensionError = 30;
+           return !((right.burnCheck(acceptableExtensionError)&&left.burnCheck(acceptableExtensionError)));
         }
     }
 

@@ -22,7 +22,6 @@ import RoadRunner.MecanumDrive;
 import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
 import com.bosons.AutoHardware.Intake;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Config
 @Autonomous(name = "AutoMain", group = "Comp",preselectTeleOp = "TeleOp")
@@ -63,21 +62,21 @@ public class AutoMain extends LinearOpMode {
                 intake.Stop(),
                 wrist.intake(),
                 arm.Zero(),
-                wrist.zero()
+                wrist.home()
         );
 
         SequentialAction homeArm2 = new SequentialAction(
                 intake.Stop(),
                 wrist.intake(),
                 arm.Zero(),
-                wrist.zero()
+                wrist.home()
         );
 
         SequentialAction homeArm3 = new SequentialAction(
                 intake.Stop(),
                 wrist.intake(),
                 arm.Zero(),
-                wrist.zero()
+                wrist.home()
         );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
@@ -185,7 +184,7 @@ public class AutoMain extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        wrist.zero(),
+                        wrist.home(),
                         //Bucket1.build(),
                         wrist.straight(),
                         ExtendToHighBucket,
