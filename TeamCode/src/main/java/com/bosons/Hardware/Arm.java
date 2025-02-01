@@ -59,7 +59,7 @@ public class Arm {
             if(home.getState()){
                 arm.setPower(0.15);
                 if (!HomeInit){
-                    arm.setTargetPosition(TicksInDegree*45);
+                    arm.setTargetPosition(TicksInDegree*90);
                     HomeInit = true;
                 }
             }

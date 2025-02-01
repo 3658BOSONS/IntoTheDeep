@@ -30,12 +30,6 @@ public class AutoDev extends LinearOpMode {
     public SleepAction sleeb(int milliseconds){
         return new SleepAction(milliseconds/1000.0);
     }
-    public SleepAction sleeb2(int milliseconds){
-        return new SleepAction(milliseconds/1000.0);
-    }
-    public SleepAction sleeb3(int milliseconds){
-        return new SleepAction(milliseconds/1000.0);
-    }
     @Override
     public void waitForStart() {
         Arm arm = new Arm(this);
@@ -149,7 +143,7 @@ public class AutoDev extends LinearOpMode {
                 hand.Bucket(),
                 arm.Bucket(),
                 hand.open(),
-                sleeb2(200)
+                sleeb(200)
         );
 
         SequentialAction dumpInHighBucket3 = new SequentialAction(
@@ -157,14 +151,15 @@ public class AutoDev extends LinearOpMode {
                 hand.Bucket(),
                 arm.Bucket(),
                 hand.open(),
-                sleeb3(200)
+                sleeb(200)
         );
 
         SequentialAction IntakeCube = new SequentialAction(
                 arm.Intake(),
+                hand.open(),
                 new ParallelAction(
                         hand.Intake(),
-                        hand.open(),
+
                         arm.ExtFull()
                 ),
                 sleeb(500),
@@ -173,11 +168,16 @@ public class AutoDev extends LinearOpMode {
         );
 
         SequentialAction IntakeCube2 = new SequentialAction(
-                hand.Intake(),
-                arm.ExtFull(),
+                arm.Intake(),
+                hand.open(),
+                new ParallelAction(
+                        hand.Intake(),
+
+                        arm.ExtFull()
+                ),
+                sleeb(500),
                 hand.close(),
-                arm.ExtHome(),
-                arm.Intake()
+                sleeb(500)
         );
 
 
@@ -251,7 +251,25 @@ public class AutoDev extends LinearOpMode {
                         arm.ParkOne(),
                         hand.Zero(),
                         arm.ParkTwo(),
-                        sleeb(10000)
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100),
+                        arm.ParkTwo(),
+                        sleeb(100)
                 )
         );
     }

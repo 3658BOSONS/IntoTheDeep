@@ -119,7 +119,7 @@ public class Hand {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","HandSpecimen");
-            double TargetPos = 1.0;
+            double TargetPos = 0.5;
             if (TargetPos>1){
                 TargetPos = 1;
             } else if (TargetPos<0) {
