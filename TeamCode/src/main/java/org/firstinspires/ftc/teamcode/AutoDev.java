@@ -51,7 +51,7 @@ public class AutoDev extends LinearOpMode {
 
         //POSITION DEFINITIONS
         Pose2d initialPose = new Pose2d(25+7.5, 53.5+(17.5/2), Math.toRadians(-90));
-        Pose2d BlueNet = new Pose2d(46.0,46.0,Math.toRadians(45));
+        Pose2d BlueNet = new Pose2d(48.0,48.0,Math.toRadians(45));
         Pose2d IntakeOne = new Pose2d(48.5,44.9,Math.toRadians(-90));
         Pose2d IntakeTwo = new Pose2d(59.0,47.9,Math.toRadians(-90));
 
@@ -81,6 +81,14 @@ public class AutoDev extends LinearOpMode {
         );
 
         ParallelAction homeArm3 = new ParallelAction(
+                hand.close(),
+                hand.home(),
+                arm.ExtHome(),
+                exendo.Zero(),
+                arm.Zero()
+        );
+
+        ParallelAction homeArm4 = new ParallelAction(
                 hand.close(),
                 hand.home(),
                 arm.ExtHome(),
@@ -204,7 +212,7 @@ public class AutoDev extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .lineToXLinearHeading(40.0,Math.toRadians(180))
                 .strafeTo(new Vector2d(40.0,12))
-                .strafeTo(new Vector2d(36.0,12));
+                .strafeTo(new Vector2d(36.0,11));
 
         TrajectoryActionBuilder intakeOne = drive.actionBuilder(BlueNet)
                 .lineToY(45.0)
@@ -236,11 +244,12 @@ public class AutoDev extends LinearOpMode {
                                     intakeOne.build()
                                 ),
                         IntakeCube,
+                        homeArm4,
                         new ParallelAction(
-                                homeArm2,
-                                Bucket2.build()
+                                Bucket2.build(),
+                                ExtendToHighBucket2,
+                                hand.Bucket()
                         ),
-                        ExtendToHighBucket2,
                         sleeb(500),
                         dumpInHighBucket2,
                         inchForward2.build(),
@@ -249,28 +258,13 @@ public class AutoDev extends LinearOpMode {
                                 park.build()
                         ),
                         arm.ParkOne(),
-                        hand.Zero(),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100),
-                        arm.ParkTwo(),
-                        sleeb(100)
+                        hand.Zero()
                 )
         );
+        while (!isStopRequested()){
+            Actions.runBlocking(
+                    arm.ParkTwo()
+            );
+        }
     }
 }
