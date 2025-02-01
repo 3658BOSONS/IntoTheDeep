@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -8,6 +9,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.bosons.AutoHardware.Extender;
 import com.bosons.AutoHardware.Hand;
+import com.bosons.Utils.LEDcontroller;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // road runner Imports
@@ -19,9 +21,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import RoadRunner.MecanumDrive;
 //Boson Imports
-import com.bosons.AutoHardware.Wrist;
 import com.bosons.AutoHardware.Arm;
-import com.bosons.AutoHardware.Intake;
 
 @Config
 @Autonomous(name = "AutoMain", group = "Comp",preselectTeleOp = "TeleOp")
@@ -32,6 +32,14 @@ public class AutoMain extends LinearOpMode {
     }
     @Override
     public void waitForStart() {
+        Arm arm = new Arm(this);
+        Hand hand = new Hand(hardwareMap);
+        LEDcontroller indicator = new LEDcontroller("LedOne","LedTwo",this);
+        while (arm.Homing){
+            indicator.SetColor("red");
+            Actions.runBlocking(new SequentialAction(hand.home(),arm.Home()));
+        }
+        indicator.SetColor("green");
         super.waitForStart();
     }
 
@@ -42,140 +50,180 @@ public class AutoMain extends LinearOpMode {
         //Tool Definitions
 
         //POSITION DEFINITIONS
-        Pose2d initialPose = new Pose2d(31.5, 70.5-8.375, Math.toRadians(90));
-        Pose2d IntakeOne = new Pose2d(49.0,44,Math.toRadians(90));
-        Pose2d IntakeTwo = new Pose2d(59.0,44,Math.toRadians(90));
-        Pose2d BlueNet = new Pose2d(50.0,50.0,Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(25+7.5, 53.5+(17.5/2), Math.toRadians(-90));
+        Pose2d BlueNet = new Pose2d(48.0,48.0,Math.toRadians(45));
+        Pose2d BlueNet2 = new Pose2d(47.5,47.5,Math.toRadians(45));
+        Pose2d IntakeOne = new Pose2d(46.5,44.9,Math.toRadians(-90));
+        Pose2d IntakeTwo = new Pose2d(59.0,47.9,Math.toRadians(-90));
 
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Extender exendo = new Extender(this);
-        Intake intake = new Intake(hardwareMap);
-        Wrist wrist = new Wrist(hardwareMap);
         Hand hand = new Hand(hardwareMap);
         Arm arm = new Arm(this);
         //ACTION SHORTCUTS
 
 
         //set the arm to the default position
-        SequentialAction homeArm = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.home()
+        ParallelAction homeArm = new ParallelAction(
+                hand.close(),
+                hand.home(),
+                arm.ExtHome(),
+                exendo.Zero(),
+                arm.Zero()
         );
 
-        SequentialAction homeArm2 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.home()
+        ParallelAction homeArm2 = new ParallelAction(
+                hand.close(),
+                hand.home(),
+                arm.ExtHome(),
+                exendo.Zero(),
+                arm.Zero()
         );
 
-        SequentialAction homeArm3 = new SequentialAction(
-                intake.Stop(),
-                wrist.intake(),
-                arm.Zero(),
-                wrist.home()
+        ParallelAction homeArm3 = new ParallelAction(
+                hand.close(),
+                hand.home(),
+                arm.ExtHome(),
+                exendo.Zero(),
+                arm.Zero()
+        );
+
+        ParallelAction homeArm4 = new ParallelAction(
+                hand.close(),
+                hand.home(),
+                arm.ExtHome(),
+                exendo.Zero(),
+                arm.Zero()
         );
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
-                wrist.intake(),
-                intake.spinIn()
+                hand.Specimen(),
+                hand.close()
         );
         SequentialAction ExtendToHighBucket = new SequentialAction(
-                hand.close(),
-                hand.Intake(),
-                arm.Bucket(),
-                exendo.HighBucket()
+                new ParallelAction(
+                        hand.home(),
+                        hand.close()
+                ),
+                new SequentialAction(
+                        arm.Bucket(),
+                        arm.ExtFull(),
+                        exendo.HighBucket(),
+                        hand.Intake()
+                )
         );
         SequentialAction ExtendToHighBucket2 = new SequentialAction(
-                hand.close(),
-                hand.Intake(),
-                arm.Bucket(),
-                exendo.HighBucket()
+                new ParallelAction(
+                        hand.home(),
+                        hand.close()
+                ),
+                new SequentialAction(
+                        arm.Bucket(),
+                        arm.ExtFull(),
+                        exendo.HighBucket(),
+                        hand.Intake()
+                )
         );
         SequentialAction ExtendToHighBucket3 = new SequentialAction(
-                hand.close(),
-                hand.Intake(),
-                arm.Bucket(),
-                exendo.HighBucket()
+                new ParallelAction(
+                        hand.home(),
+                        hand.close()
+                ),
+                new SequentialAction(
+                        arm.Bucket(),
+                        arm.ExtFull(),
+                        exendo.HighBucket(),
+                        hand.Intake()
+                )
         );
-
-
 
         //move arm to High bucket and drop specimen
         SequentialAction dumpInHighBucket = new SequentialAction(
                 hand.close(),
                 hand.Bucket(),
                 arm.Bucket(),
-                hand.open()
+                hand.open(),
+                sleeb(200)
         );
 
         SequentialAction dumpInHighBucket2 = new SequentialAction(
                 hand.close(),
                 hand.Bucket(),
                 arm.Bucket(),
-                hand.open()
+                hand.open(),
+                sleeb(200)
         );
 
         SequentialAction dumpInHighBucket3 = new SequentialAction(
                 hand.close(),
                 hand.Bucket(),
                 arm.Bucket(),
-                hand.open()
+                hand.open(),
+                sleeb(200)
         );
 
         SequentialAction IntakeCube = new SequentialAction(
-                wrist.intake(),
-                intake.spinIn(),
-                arm.Intake()
+                arm.Intake(),
+                hand.open(),
+                new ParallelAction(
+                        hand.Intake(),
+
+                        arm.ExtFull()
+                ),
+                sleeb(500),
+                hand.close(),
+                sleeb(500)
         );
 
         SequentialAction IntakeCube2 = new SequentialAction(
-                wrist.intake(),
-                intake.spinIn(),
-                arm.Intake()
+                arm.Intake(),
+                hand.open(),
+                new ParallelAction(
+                        hand.Intake(),
+
+                        arm.ExtFull()
+                ),
+                sleeb(500),
+                hand.close(),
+                sleeb(500)
         );
 
 
 
         //MOVEMENT ACTIONS
         TrajectoryActionBuilder Bucket1 = drive.actionBuilder(initialPose)
-                .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .splineToLinearHeading(BlueNet,Math.toRadians(45));
 
         TrajectoryActionBuilder Bucket2 = drive.actionBuilder(IntakeOne)
-                .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .lineToY(BlueNet2.position.y)
+                .splineToLinearHeading(BlueNet2,Math.toRadians(45));
 
         TrajectoryActionBuilder Bucket3 = drive.actionBuilder(IntakeTwo)
-                .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .lineToY(BlueNet.position.y)
+                .splineToLinearHeading(BlueNet,Math.toRadians(45));
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
-                .lineToY(56.0);
+                .lineToY(42.0);
 
         TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
-                .lineToY(54.0);
+                .lineToY(42.0);
 
-        TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
-                .lineToYLinearHeading(38.0,Math.toRadians(0))
+        TrajectoryActionBuilder park = drive.actionBuilder(IntakeOne)
                 .setTangent(Math.toRadians(0))
-                .lineToXLinearHeading(-36.0,Math.toRadians(0))
-                .strafeTo(new Vector2d(-36.0,70.5-8.375));
+                .lineToXLinearHeading(40.0,Math.toRadians(180))
+                .strafeTo(new Vector2d(40.0,12))
+                .strafeTo(new Vector2d(36.0,11));
 
         TrajectoryActionBuilder intakeOne = drive.actionBuilder(BlueNet)
-                .setTangent(45.0)
-                .lineToY(55.0)
-                .splineToLinearHeading(IntakeOne,Math.toRadians(270));
+                .lineToY(45.0)
+                .splineToLinearHeading(IntakeOne,Math.toRadians(-90));
         TrajectoryActionBuilder intakeOneInch = drive.actionBuilder(IntakeOne)
                 .lineToY(36.0);
 
         TrajectoryActionBuilder intakeTwo = drive.actionBuilder(BlueNet)
-                .setTangent(45.0)
-                .lineToY(55.0)
-                .splineToLinearHeading(IntakeTwo,Math.toRadians(270));
+                .lineToY(45.0)
+                .splineToLinearHeading(IntakeOne,Math.toRadians(-90));
 
         TrajectoryActionBuilder intakeTwoInch = drive.actionBuilder(IntakeTwo)
                 .lineToY(36.0);
@@ -184,27 +232,40 @@ public class AutoMain extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intakeSpecimen,
-                        wrist.home(),
-                        //Bucket1.build(),
-                        wrist.straight(),
-                        ExtendToHighBucket,
-                        //inchForward.build(),
+                        new ParallelAction(
+                                Bucket1.build(),
+                                ExtendToHighBucket,
+                                hand.Bucket()
+                        ),
+                        sleeb(500),
                         dumpInHighBucket,
-                        homeArm,
-                        //intakeOne.build(),
-                        //Do Intake Stuff
+                        inchForward.build(),
+                        new ParallelAction(
+                                homeArm,
+                                intakeOne.build()
+                        ),
                         IntakeCube,
-                        //intakeOneInch.build(),
-                        //bucket stuff
-                        homeArm2,
-                        //Bucket2.build(),
-                        wrist.straight(),
-                        ExtendToHighBucket2,
-                        //inchForward2.build(),
-                        //dumpInHighBucket2,
-                        homeArm3
-                        //park.build()
+                        homeArm4,
+                        new ParallelAction(
+                                Bucket2.build(),
+                                ExtendToHighBucket2,
+                                hand.Bucket()
+                        ),
+                        sleeb(500),
+                        dumpInHighBucket2,
+                        inchForward2.build(),
+                        new ParallelAction(
+                                homeArm3,
+                                park.build()
+                        ),
+                        arm.ParkOne(),
+                        hand.Zero()
                 )
         );
+        while (!isStopRequested()){
+            Actions.runBlocking(
+                    arm.ParkTwo()
+            );
+        }
     }
 }

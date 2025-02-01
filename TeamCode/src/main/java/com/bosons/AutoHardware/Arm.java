@@ -55,11 +55,11 @@ public class Arm {
     }
     public Action ExtFull(){ return new ExtFull(); }
 
-    public class ExtIntake implements Action{
+    public class ExtHalf implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","HandOpen");
-            double TargetPos = 0.8;
+            double TargetPos = 0.5;
             if (TargetPos>1){
                 TargetPos = 1;
             } else if (TargetPos<0) {
@@ -69,7 +69,7 @@ public class Arm {
             return false;
         }
     }
-    public Action ExtIntake(){ return new ExtIntake(); }
+    public Action ExtHalf(){ return new ExtHalf(); }
 
     public class ExtHome implements Action{
         @Override

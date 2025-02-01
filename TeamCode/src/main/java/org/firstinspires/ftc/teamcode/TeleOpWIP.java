@@ -93,13 +93,7 @@ public class TeleOpWIP extends OpMode {
         //telemetry.addData("UpdateSpeed",UpdateSpeed);
         //indicator.SetColor(LedColor);
 
-        if(LEDTimer.seconds()>=2 && LEDTimer.seconds()<4) {
-            indicator.SetColor("azure");
-        } else if (LEDTimer.seconds()>=4) {
-            indicator.SetColor(0);
-            LEDTimer.reset();
-        }
-
+        indicator.SetColor("Azure");
     }
 
     /*
@@ -116,6 +110,7 @@ public class TeleOpWIP extends OpMode {
     @Override
     public void loop () {
         if (arm.Homing){
+            hand.setRotat(1.0);
             indicator.SetColor("red");
             if (arm.getHomeState()){
                 indicator.SetColor("green");
@@ -191,20 +186,6 @@ public class TeleOpWIP extends OpMode {
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
             //extendo.FORBIDDIN();
         }
-
-
-        double deltaTime = getRuntime() - runtime;
-
-        telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
-        telemetry.addData("MotorPowerLeft",extendo.getPower()[1]);
-        telemetry.addData("MotorTicksRight",extendo.getCurrentPosition()[0]);
-        telemetry.addData("MotorTicksLeft",extendo.getCurrentPosition()[1]);
-        telemetry.addData("ArmTicks",arm.getCurrentPosition());
-        telemetry.addData("ArmPower",arm.getPower());
-        telemetry.addData("ArmOffset",arm.getOffset());
-        telemetry.addData("deltatime",deltaTime);
-        telemetry.addData("armDegrees",arm.getCurrentPositionInDegrees());
-        telemetry.addData("rightTrigger",driverA.getTriggerValue(Controller.Trigger.Right));
 
         if(!arm.Homing) {
             switch (currentPose) {
@@ -298,6 +279,19 @@ public class TeleOpWIP extends OpMode {
         }
 
         driverA.updateAll();
+        double deltaTime = getRuntime() - runtime;
+
+        telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
+        telemetry.addData("MotorPowerLeft",extendo.getPower()[1]);
+        telemetry.addData("MotorTicksRight",extendo.getCurrentPosition()[0]);
+        telemetry.addData("MotorTicksLeft",extendo.getCurrentPosition()[1]);
+        telemetry.addData("ArmTicks",arm.getCurrentPosition());
+        telemetry.addData("ArmPower",arm.getPower());
+        telemetry.addData("ArmOffset",arm.getOffset());
+        telemetry.addData("deltatime",deltaTime);
+        telemetry.addData("armDegrees",arm.getCurrentPositionInDegrees());
+        telemetry.addData("rightTrigger",driverA.getTriggerValue(Controller.Trigger.Right));
+
 
     }
 

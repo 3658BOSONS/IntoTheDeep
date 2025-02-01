@@ -15,8 +15,6 @@ public class Hand {
     public Hand(OpMode OPmode){
         claw = OPmode.hardwareMap.get(Servo.class,"claw");
         wrist = OPmode.hardwareMap.get(Servo.class,"wrist");
-        claw.setPosition(1);
-        wrist.setPosition(1);
     }
 
     public void grip(Pose pose){
