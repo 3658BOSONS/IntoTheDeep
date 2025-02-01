@@ -119,7 +119,7 @@ public class Arm {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","ArmBucket");
-            int degrees = -170;
+            int degrees = -174;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
                 arm.setTargetPosition((180 * TicksInDegree) + offset);
