@@ -46,9 +46,6 @@ public class AutoDev extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(hand.home(),arm.Home()));
         }
         indicator.SetColor("green");
-
-
-
         super.waitForStart();
     }
 
@@ -60,9 +57,9 @@ public class AutoDev extends LinearOpMode {
 
         //POSITION DEFINITIONS
         Pose2d initialPose = new Pose2d(25+7.5, 53.5+(17.5/2), Math.toRadians(-90));
-        Pose2d IntakeOne = new Pose2d(48.5,47.9,Math.toRadians(-90));
-        Pose2d IntakeTwo = new Pose2d(59.0,47.9,Math.toRadians(90));
         Pose2d BlueNet = new Pose2d(46.0,46.0,Math.toRadians(45));
+        Pose2d IntakeOne = new Pose2d(48.5,44.9,Math.toRadians(-90));
+        Pose2d IntakeTwo = new Pose2d(59.0,47.9,Math.toRadians(-90));
 
         //HARDWARE DEFINITIONS
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
@@ -136,10 +133,7 @@ public class AutoDev extends LinearOpMode {
                         exendo.HighBucket(),
                         hand.Intake()
                 )
-
         );
-
-
 
         //move arm to High bucket and drop specimen
         SequentialAction dumpInHighBucket = new SequentialAction(
@@ -167,10 +161,15 @@ public class AutoDev extends LinearOpMode {
         );
 
         SequentialAction IntakeCube = new SequentialAction(
-                hand.open(),
-                hand.Intake(),
-                arm.ExtFull(),
-                hand.close()
+                arm.Intake(),
+                new ParallelAction(
+                        hand.Intake(),
+                        hand.open(),
+                        arm.ExtFull()
+                ),
+                sleeb(500),
+                hand.close(),
+                sleeb(500)
         );
 
         SequentialAction IntakeCube2 = new SequentialAction(
@@ -185,16 +184,15 @@ public class AutoDev extends LinearOpMode {
 
         //MOVEMENT ACTIONS
         TrajectoryActionBuilder Bucket1 = drive.actionBuilder(initialPose)
-                .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .splineToLinearHeading(BlueNet,Math.toRadians(45));
 
         TrajectoryActionBuilder Bucket2 = drive.actionBuilder(IntakeOne)
                 .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .splineToLinearHeading(BlueNet,Math.toRadians(45));
 
         TrajectoryActionBuilder Bucket3 = drive.actionBuilder(IntakeTwo)
                 .lineToY(48.0)
-                .splineToLinearHeading(BlueNet,60.0);
+                .splineToLinearHeading(BlueNet,Math.toRadians(45));
 
         TrajectoryActionBuilder inchForward = drive.actionBuilder(BlueNet)
                 .lineToY(42.0);
@@ -202,23 +200,21 @@ public class AutoDev extends LinearOpMode {
         TrajectoryActionBuilder inchForward2 = drive.actionBuilder(BlueNet)
                 .lineToY(42.0);
 
-        TrajectoryActionBuilder park = drive.actionBuilder(new Pose2d(58,58,45.0))
-                .lineToYLinearHeading(38.0,Math.toRadians(0))
+        TrajectoryActionBuilder park = drive.actionBuilder(IntakeOne)
                 .setTangent(Math.toRadians(0))
-                .lineToXLinearHeading(-36.0,Math.toRadians(-180))
-                .strafeTo(new Vector2d(36,11));
+                .lineToXLinearHeading(40.0,Math.toRadians(180))
+                .strafeTo(new Vector2d(40.0,12))
+                .strafeTo(new Vector2d(36.0,12));
 
         TrajectoryActionBuilder intakeOne = drive.actionBuilder(BlueNet)
-                .setTangent(45.0)
-                .lineToY(55.0)
+                .lineToY(45.0)
                 .splineToLinearHeading(IntakeOne,Math.toRadians(-90));
         TrajectoryActionBuilder intakeOneInch = drive.actionBuilder(IntakeOne)
                 .lineToY(36.0);
 
         TrajectoryActionBuilder intakeTwo = drive.actionBuilder(BlueNet)
-                .setTangent(45.0)
-                .lineToY(55.0)
-                .splineToLinearHeading(IntakeTwo,Math.toRadians(-90));
+                .lineToY(45.0)
+                .splineToLinearHeading(IntakeOne,Math.toRadians(-90));
 
         TrajectoryActionBuilder intakeTwoInch = drive.actionBuilder(IntakeTwo)
                 .lineToY(36.0);
@@ -232,32 +228,30 @@ public class AutoDev extends LinearOpMode {
                                 ExtendToHighBucket,
                                 hand.Bucket()
                         ),
-                        inchForward.build(),
+                        sleeb(500),
                         dumpInHighBucket,
-
+                        inchForward.build(),
                         new ParallelAction(
                                     homeArm,
                                     intakeOne.build()
                                 ),
-
-                        //Do Intake Stuff
                         IntakeCube,
-                        intakeOneInch.build(),
-                        //bucket stuff
                         new ParallelAction(
                                 homeArm2,
                                 Bucket2.build()
                         ),
-
-                        //wrist.straight(),
-
                         ExtendToHighBucket3,
-                        inchForward2.build(),
+                        sleeb(500),
                         dumpInHighBucket2,
+                        inchForward2.build(),
                         new ParallelAction(
                                 homeArm3,
                                 park.build()
-                        )
+                        ),
+                        arm.ParkOne(),
+                        hand.Specimen(),
+                        arm.ParkTwo(),
+                        sleeb(10000)
                 )
         );
     }

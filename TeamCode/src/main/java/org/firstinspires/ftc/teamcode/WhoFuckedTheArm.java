@@ -130,9 +130,7 @@ public class WhoFuckedTheArm extends OpMode {
         arm.Home();
 
         double runtime = getRuntime();
-
-
-
+        
         double deltaTime = getRuntime() - runtime;
 
         telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
