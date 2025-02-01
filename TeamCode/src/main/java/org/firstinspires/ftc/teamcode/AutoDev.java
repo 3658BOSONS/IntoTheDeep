@@ -240,7 +240,7 @@ public class AutoDev extends LinearOpMode {
                                 homeArm2,
                                 Bucket2.build()
                         ),
-                        ExtendToHighBucket3,
+                        ExtendToHighBucket2,
                         sleeb(500),
                         dumpInHighBucket2,
                         inchForward2.build(),
@@ -249,7 +249,7 @@ public class AutoDev extends LinearOpMode {
                                 park.build()
                         ),
                         arm.ParkOne(),
-                        hand.Specimen(),
+                        hand.Zero(),
                         arm.ParkTwo(),
                         sleeb(10000)
                 )

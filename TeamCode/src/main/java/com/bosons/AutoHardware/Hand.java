@@ -114,4 +114,22 @@ public class Hand {
         }
     }
     public Action Specimen(){ return new Specimen(); }
+
+    public class Zero implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandSpecimen");
+            double TargetPos = 1.0;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            wrist.setPosition(TargetPos);
+            return false;
+        }
+    }
+    public Action Zero(){ return new Zero(); }
+
+
 }
