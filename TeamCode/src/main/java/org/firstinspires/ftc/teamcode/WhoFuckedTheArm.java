@@ -116,7 +116,7 @@ public class WhoFuckedTheArm extends OpMode {
     public void loop () {
         if (arm.Homing){
             indicator.SetColor("red");
-            if (arm.getHomeState()){
+            if (arm.GetHomeState()){
                 indicator.SetColor("green");
             }
         }
@@ -133,10 +133,8 @@ public class WhoFuckedTheArm extends OpMode {
         
         double deltaTime = getRuntime() - runtime;
 
-        telemetry.addData("MotorPowerRight",extendo.getPower()[0]);
-        telemetry.addData("MotorPowerLeft",extendo.getPower()[1]);
-        telemetry.addData("MotorTicksRight",extendo.getCurrentPosition()[0]);
-        telemetry.addData("MotorTicksLeft",extendo.getCurrentPosition()[1]);
+        telemetry.addData("MotorPowerRight",extendo.getPowerRight());
+        telemetry.addData("MotorPowerLeft",extendo.getPowerLeft());
         telemetry.addData("ArmTicks",arm.getCurrentPosition());
         telemetry.addData("ArmPower",arm.getPower());
         telemetry.addData("ArmOffset",arm.getOffset());

@@ -8,9 +8,19 @@ public class Motor { //DCMotor Wrapper Class with added functionality and usb co
 
     private final DcMotor motor;
     private double lastPower;
+    private int Offset;
+
+    public void setOffset(int offset){
+        this.Offset = offset;
+    }
+
+    public int getOffset(){
+        return(this.Offset);
+    }
 
     public Motor(String name, OpMode op)
     {
+        this.Offset=0;
         motor = op.hardwareMap.get(DcMotor.class, name);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
@@ -31,14 +41,17 @@ public class Motor { //DCMotor Wrapper Class with added functionality and usb co
     public void setRunMode(DcMotor.RunMode mode) {
         motor.setMode(mode);
     }
+
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         motor.setZeroPowerBehavior(zeroPowerBehavior);
     }
+
     public void setDirection(DcMotor.Direction direction) {
         motor.setDirection(direction);
     }
+
     public void setTargetPosition(int position) {
-        motor.setTargetPosition(position);
+        motor.setTargetPosition(position+this.Offset);
     }
 
     public double getPower(){
@@ -56,19 +69,25 @@ public class Motor { //DCMotor Wrapper Class with added functionality and usb co
         lastPower = power;
     }
 
+
+
     public void resetEncoder() {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public int getCurrentPosition() {
+        return motor.getCurrentPosition()-this.Offset;
+    }
+    public int getRawPosition() {
         return motor.getCurrentPosition();
     }
+
 
     public int getTargetPosition() {
         return motor.getTargetPosition();
     }
     public boolean burnCheck(int acceptableError) {
         int targetDist = Math.abs(getTargetPosition() - getCurrentPosition());//get positional error;
-        if (targetDist <= acceptableError) {//check if error is acceptable;
+        if (targetDist <= acceptableError+this.Offset) {//check if error is acceptable;
             setPower(0);//shut off power to prevent burning;
             return true;//if within range of target;
         }
@@ -78,7 +97,7 @@ public class Motor { //DCMotor Wrapper Class with added functionality and usb co
     }
     public boolean burnCheck(int acceptableError,Boolean checkMode) {
         int targetDist = Math.abs(getTargetPosition() - getCurrentPosition());//get positional error;
-        if (targetDist <= acceptableError) {//check if error is acceptable;
+        if (targetDist <= acceptableError+this.Offset) {//check if error is acceptable;
             if (!checkMode){
                 setPower(0);
             }

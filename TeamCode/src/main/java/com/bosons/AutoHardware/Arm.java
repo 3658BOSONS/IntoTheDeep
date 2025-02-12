@@ -8,11 +8,16 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.bosons.Hardware.Motor;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 public class Arm {
@@ -25,7 +30,7 @@ public class Arm {
     public Motor arm;
     private int attempts = 1;
     public Servo ext = null;
-    public DigitalChannel homeSwitch;
+    public NormalizedColorSensor home;
     private int TicksInDegree = (int) 5281.1/360;
 
     public Arm(OpMode opMode){
@@ -34,8 +39,7 @@ public class Arm {
         arm.setPower(0.0);
         arm.setTargetPosition(0);
         arm.setConstants(DcMotor.RunMode.RUN_TO_POSITION, DcMotor.ZeroPowerBehavior.BRAKE, DcMotorSimple.Direction.FORWARD);
-        homeSwitch = (opMode.hardwareMap.get(DigitalChannel.class, "armHome"));
-        homeSwitch.setMode(DigitalChannel.Mode.INPUT);
+        home = (opMode.hardwareMap.get(NormalizedColorSensor.class, "armHome"));
         offset = 0;
     }
 
@@ -113,6 +117,33 @@ public class Arm {
         }
     }
     public Action ParkOne(){ return new ParkOne(); }
+
+    public class ParkThree implements Action{
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","ArmBucket");
+            int degrees = -45;
+            double TicksAsDegrees = degrees*TicksInDegree;
+            if (degrees>=180) {
+                arm.setTargetPosition((180 * TicksInDegree) + offset);
+            }
+            else{
+                arm.setTargetPosition(degrees*TicksInDegree + offset);
+            }
+            if (abs(TicksAsDegrees - arm.getCurrentPosition())<=10){
+                arm.setPower(1.0);
+            }else{
+                arm.setPower(1.0);
+            }
+            if ((arm.getCurrentPosition()/TicksInDegree-offset) < -30){
+
+            }
+            int acceptableExtensionError = 30;
+            return !(arm.burnCheck(acceptableExtensionError,false));
+        }
+    }
+    public Action ParkThree(){ return new ParkThree(); }
 
     public class ParkTwo implements Action{
 
@@ -252,10 +283,18 @@ public class Arm {
 
     public class Home implements Action{
 
+
+        public double GetHomeDist(){
+            if (home instanceof DistanceSensor){
+                return (((DistanceSensor) home).getDistance(DistanceUnit.MM));
+            }
+            return 9999.9999;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (Homing){
-                if(homeSwitch.getState()){
+                if(GetHomeDist() > 10.0){
                     arm.setPower(0.15);
                     if (!HomeInit){
                         arm.setTargetPosition(TicksInDegree*90);
@@ -268,14 +307,15 @@ public class Arm {
                     arm.setTargetPosition(0);
                     Homing = false;
                     HomeInit = false;
-                    attempts = 1;
+                    return(false);
                 }
-                if(abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 30){
+                if(Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 30){
+                    opm.telemetry.addData("TargetDistance",(arm.getCurrentPosition() - arm.getTargetPosition()));
                     arm.setTargetPosition((arm.getTargetPosition()*-1)*attempts);
                     attempts+=1;
                 }
             }
-            return !homeSwitch.getState();
+            return !(((DistanceSensor) home).getDistance(DistanceUnit.MM) < 5);
         }
     }
 

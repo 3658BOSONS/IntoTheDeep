@@ -53,7 +53,7 @@ public class AutoMain extends LinearOpMode {
         Pose2d initialPose = new Pose2d(25+7.5, 53.5+(17.5/2), Math.toRadians(-90));
         Pose2d BlueNet = new Pose2d(48.0,48.0,Math.toRadians(45));
         Pose2d BlueNet2 = new Pose2d(47.5,47.5,Math.toRadians(45));
-        Pose2d IntakeOne = new Pose2d(46.5,44.9,Math.toRadians(-90));
+        Pose2d IntakeOne = new Pose2d(46.0,44.9,Math.toRadians(-90));
         Pose2d IntakeTwo = new Pose2d(59.0,47.9,Math.toRadians(-90));
 
         //HARDWARE DEFINITIONS

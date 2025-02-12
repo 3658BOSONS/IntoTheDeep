@@ -4,12 +4,16 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOpWIP;
 
 @Config
@@ -22,9 +26,11 @@ public class Arm {
     //arm extension motors
     public Motor arm;
     private int attempts = 1;
+    public double MaxPow = 1.0;
     public Servo ext = null;
-    public DigitalChannel home;
+    public NormalizedColorSensor home;
     private int TicksInDegree = (int) 5281.1/360;
+    public boolean HomeOverride = false;
 
     public Arm(OpMode opMode){
         opm = opMode;
@@ -33,8 +39,7 @@ public class Arm {
         arm.setPower(0.0);
         arm.setTargetPosition(0);
         arm.setConstants(DcMotor.RunMode.RUN_TO_POSITION, DcMotor.ZeroPowerBehavior.BRAKE, DcMotorSimple.Direction.FORWARD);
-        home = (opMode.hardwareMap.get(DigitalChannel.class, "armHome"));
-        home.setMode(DigitalChannel.Mode.INPUT);
+        home = (opMode.hardwareMap.get(NormalizedColorSensor.class, "armHome"));
         offset = 0;
     }
 
@@ -52,11 +57,24 @@ public class Arm {
         return arm.getPower();
     }
 
-    public void Home(){
+    public double GetHomeDist(){
+        if (home instanceof DistanceSensor){
+            return (((DistanceSensor) home).getDistance(DistanceUnit.MM));
+        }
+        return 9999.9999;
+    }
 
-        opm.telemetry.addData("Home Button", home.getState());
+    public boolean GetHomeState(){
+        return GetHomeDist() < 5;
+    }
+
+    public void setMaxPow(double pow){
+        MaxPow = pow;
+    }
+
+    public void Home(){
         if (Homing){
-            if(home.getState()){
+            if(GetHomeDist() > 10.0||HomeOverride){
                 arm.setPower(0.15);
                 if (!HomeInit){
                     arm.setTargetPosition(TicksInDegree*90);
@@ -97,9 +115,7 @@ public class Arm {
         }
         opm.telemetry.addData("armPower",getPower());
     }
-    public boolean getHomeState(){
-        return !home.getState();
-    }
+
     public void extendoServo(double extTarget){
         //extTarget=max(extTarget, 1.0);
         //extTarget=min(extTarget, 0.0);
