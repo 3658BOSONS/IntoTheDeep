@@ -49,14 +49,16 @@ public class TeleOpWIP extends OpMode {
     public Hand hand = null;
     public Extender extendo = null;
     public DriveTrain driveTrain = null;
-    public double LedColor = 0.722;
-    public boolean Reversed = true;
-    public static double UpdateSpeed = 0.0001;
+    //public double LedColor = 0.722;
+    //public boolean Reversed = true;
+    //public static double UpdateSpeed = 0.0001;
 
-    public ElapsedTime LEDTimer = new ElapsedTime();
+    //public ElapsedTime LEDTimer = new ElapsedTime();
     public LEDcontroller indicator = null;
     pose currentPose = pose.home;
     height currentHeight = height.high;
+    int rotationClicks = 0;
+    int degreePerInterval = 45;
 
     /*
      * Code to run ONCE when the Driver hits INIT
@@ -177,7 +179,7 @@ public class TeleOpWIP extends OpMode {
             }
         }
 
-        if(driverA.onButtonPress(Controller.Button.rightBumper)){
+        if(driverA.onButtonPress(Controller.Button.rightStickButton)){
             if(currentPose==pose.climb0){
                 currentPose = pose.climb1;
             }
@@ -188,7 +190,19 @@ public class TeleOpWIP extends OpMode {
 
 
         if(driverA.onButtonPress(Controller.Button.rightBumper)){
-            //extendo.FORBIDDIN();
+            rotationClicks -= 1;
+        }
+        if (driverA.onButtonPress(Controller.Button.leftBumper)) {
+            rotationClicks += 1;
+        }
+        if(Math.abs(rotationClicks) > 90/degreePerInterval){//clamp
+            rotationClicks = 90/degreePerInterval * rotationClicks / Math.abs(rotationClicks);
+        }
+        if(currentPose == pose.intake){//set
+            hand.setClawAngle(degreePerInterval * rotationClicks);
+        }
+        else{//reset
+            rotationClicks = 0;
         }
 
         if(!arm.Homing) {
@@ -197,19 +211,21 @@ public class TeleOpWIP extends OpMode {
                     indicator.SetColor("green");
                     extendo.ExtendToTarget(0);
                     hand.setRotat(1);
+                    hand.setClawAngle(0);
                     arm.setRotat(0);
                     break;
                 }
                 case intake: {
                     indicator.SetColor("blue");
                     extendo.ExtendToTarget(0);
-                    arm.setRotat(-100);
+                    arm.setRotat(-105);
                     if(arm.getCurrentPositionInDegrees()<-50){
-                        hand.setRotat(0.6);
+                        hand.setRotat(0.61);
                         arm.extendoServo(driverA.getTriggerValue(Controller.Trigger.Right));
                     }
                     else{
                         hand.setRotat(1);
+                        hand.setClawAngle(0);
                         arm.extendoServo(0);
                     }
                     break;
@@ -227,12 +243,14 @@ public class TeleOpWIP extends OpMode {
                             else{
                                 arm.extendoServo(0);
                                 hand.setRotat(1);
+                                hand.setClawAngle(0);
                             }
                             break;
                         }
                         case high:{
                             extendo.ExtendToTarget(6500);//8000
                             arm.setRotat(160);
+                            hand.setClawAngle(0);
                             if(arm.getCurrentPositionInDegrees()>50){
                                 arm.extendoServo(1);
                                 hand.setRotat(0.5);

@@ -75,7 +75,7 @@ public class Arm {
     public void Home(){
         if (Homing){
             if(GetHomeDist() > 10.0||HomeOverride){
-                arm.setPower(0.15);
+                arm.setPower(0.15);//0.15
                 if (!HomeInit){
                     arm.setTargetPosition(TicksInDegree*90);
                     HomeInit = true;
@@ -109,7 +109,7 @@ public class Arm {
             arm.setTargetPosition(degrees*TicksInDegree + offset);
         }
         if (Math.abs(TicksAsDegrees - arm.getCurrentPosition())<=30){
-            arm.setPower(0.0);
+            arm.setPower(0.1);//0
         }else{
             arm.setPower(1.0);
         }
