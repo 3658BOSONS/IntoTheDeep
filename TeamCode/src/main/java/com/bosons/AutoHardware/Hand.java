@@ -11,19 +11,22 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Hand {
     public Servo claw = null;
     public Servo wrist = null;
+    public Servo spinny = null;
 
     public Hand(HardwareMap hwm){
         claw = hwm.get(Servo.class,"claw");
         wrist = hwm.get(Servo.class,"wrist");
+        spinny=hwm.get(Servo.class,"clawSpinny");
         claw.setPosition(1);
         wrist.setPosition(1);
+        spinny.setPosition(0.5);
     }
 
     public class open implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","HandOpen");
-            double TargetPos = 0;
+            double TargetPos = 1.0;
                 if (TargetPos>1){
                     TargetPos = 1;
                 } else if (TargetPos<0) {
@@ -39,7 +42,7 @@ public class Hand {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","HandClose");
-            double TargetPos = 1;
+            double TargetPos = 0.0;
             if (TargetPos>1){
                 TargetPos = 1;
             } else if (TargetPos<0) {

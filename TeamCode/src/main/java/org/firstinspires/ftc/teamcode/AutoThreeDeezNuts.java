@@ -65,53 +65,72 @@ public class AutoThreeDeezNuts extends LinearOpMode {
 
 
         //set the arm to the default position
-        ParallelAction homeArm = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.Zero()
+        SequentialAction homeArm = new SequentialAction(
+                new ParallelAction(
+                        hand.close(),
+                        hand.home(),
+                        arm.ExtHome()
+                ),
+                sleeb(100),
+                new ParallelAction(
+                        exendo.Zero(),
+                    arm.Zero()
+                )
         );
 
-        ParallelAction homeArm2 = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.Zero()
+        SequentialAction homeArm2 = new SequentialAction(
+                new ParallelAction(
+                        hand.close(),
+                        hand.home(),
+                        arm.ExtHome()
+                ),
+                sleeb(100),
+                new ParallelAction(
+                        exendo.Zero(),
+                        arm.Zero()
+                )
         );
 
-        ParallelAction homeArm3 = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.Zero()
+        SequentialAction homeArm3 = new SequentialAction(
+                new ParallelAction(
+                        hand.close(),
+                        hand.home(),
+                        arm.ExtHome()
+                ),
+                sleeb(100),
+                new ParallelAction(
+                        exendo.Zero(),
+                        arm.Zero()
+                )
         );
 
-        ParallelAction homeArm4 = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.Zero()
+        SequentialAction homeArm4 = new SequentialAction(
+                new ParallelAction(
+                        hand.close(),
+                        hand.home(),
+                        arm.ExtHome()
+                ),
+                sleeb(100),
+                new ParallelAction(
+                        exendo.Zero(),
+                        arm.Zero()
+                )
         );
 
-        ParallelAction homeArm5 = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.Zero()
+        SequentialAction homeArm5 = new SequentialAction(
+                new ParallelAction(
+                        hand.close(),
+                        hand.home(),
+                        arm.ExtHome()
+                ),
+                sleeb(100),
+                new ParallelAction(
+                        exendo.Zero(),
+                        arm.Zero()
+                )
         );
 
-        ParallelAction homeArm6 = new ParallelAction(
-                hand.close(),
-                hand.home(),
-                arm.ExtHome(),
-                exendo.Zero(),
-                arm.ParkThree()
-        );
+
 
         //move arm to intake position and grab cube
         ParallelAction intakeSpecimen = new ParallelAction(
@@ -265,21 +284,21 @@ public class AutoThreeDeezNuts extends LinearOpMode {
                                     intakeOne.build()
                                 ),
                         IntakeCube,
-                        homeArm,
+                        homeArm2,
                         new ParallelAction(
                                 Bucket2.build(),
-                                ExtendToHighBucket,
+                                ExtendToHighBucket2,
                                 hand.Bucket()
                         ),
                         sleeb(500),
-                        dumpInHighBucket,
+                        dumpInHighBucket2,
                         inchForward2.build(),
                         new ParallelAction(
-                                homeArm,
+                                homeArm3,
                                 intakeTwo.build()
                         ),
-                        IntakeCube,
-                        homeArm,
+                        IntakeCube2,
+                        homeArm4,
                         Bucket3.build(),
                         new ParallelAction(
                                 ExtendToLowBucket,
@@ -289,7 +308,7 @@ public class AutoThreeDeezNuts extends LinearOpMode {
                         dumpinlowbucket,
                         inchForward3.build(),
                         new ParallelAction(
-                                homeArm,
+                                homeArm5,
                                 park.build()
                         )
 

@@ -229,7 +229,7 @@ public class Arm {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("Current State: ","ArmIntake");
-            int degrees = -100;
+            int degrees = -102;
             double TicksAsDegrees = degrees*TicksInDegree;
             if (degrees>=180) {
                 arm.setTargetPosition((180 * TicksInDegree) + offset);
