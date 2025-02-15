@@ -17,8 +17,8 @@ public class Hand {
         claw = hwm.get(Servo.class,"claw");
         wrist = hwm.get(Servo.class,"wrist");
         spinny=hwm.get(Servo.class,"clawSpinny");
-        claw.setPosition(1);
-        wrist.setPosition(1);
+        claw.setPosition(0.0);
+        wrist.setPosition(1.0);
         spinny.setPosition(0.5);
     }
 

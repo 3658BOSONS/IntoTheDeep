@@ -52,8 +52,8 @@ public class AutoThreeDeezNuts extends LinearOpMode {
         Pose2d BlueNet = new Pose2d(47.5,47.5,Math.toRadians(45));//orign: 48.0
         Pose2d BlueNet2 = new Pose2d(47.5,47.5,Math.toRadians(45));
         Pose2d BlueNet3 = new Pose2d(55,55,Math.toRadians(45));
-        Pose2d IntakeOne = new Pose2d(47,44.9,Math.toRadians(-90));
-        Pose2d IntakeTwo = new Pose2d(58.5,45.0,Math.toRadians(-90));
+        Pose2d IntakeOne = new Pose2d(47,48.5,Math.toRadians(-90));
+        Pose2d IntakeTwo = new Pose2d(58.5,48.5,Math.toRadians(-90));
 
 
         //HARDWARE DEFINITIONS
