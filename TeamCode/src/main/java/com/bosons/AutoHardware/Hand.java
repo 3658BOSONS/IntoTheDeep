@@ -22,6 +22,36 @@ public class Hand {
         spinny.setPosition(0.5);
     }
 
+    public class SpinZero implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandOpen");
+            double TargetPos = 0.5;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            spinny.setPosition(TargetPos);
+            return false;
+        }
+    }
+
+    public class SpinPickup implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.put("Current State: ","HandOpen");
+            double TargetPos = 0.25;
+            if (TargetPos>1){
+                TargetPos = 1;
+            } else if (TargetPos<0) {
+                TargetPos = 0;
+            }
+            spinny.setPosition(TargetPos);
+            return false;
+        }
+    }
+
     public class open implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
